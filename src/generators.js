@@ -6,6 +6,7 @@ import TypescriptInterfaceGenerator from "./generators/TypescriptInterfaceGenera
 import VueGenerator from "./generators/VueGenerator";
 import VuetifyGenerator from "./generators/VuetifyGenerator";
 import QuasarGenerator from "./generators/QuasarGenerator";
+import AngularGenerator from "./generators/AngularGenerator";
 
 function wrap(cl) {
   return ({ hydraPrefix, templateDirectory }) =>
@@ -30,5 +31,7 @@ export default function generators(generator = "react") {
       return wrap(VuetifyGenerator);
     case "quasar":
       return wrap(QuasarGenerator);
+    case "angular":
+      return wrap(AngularGenerator);
   }
 }
