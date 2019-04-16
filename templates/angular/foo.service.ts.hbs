@@ -1,0 +1,34 @@
+import { {{name}} } from "{{resourceFile}}";
+import { HttpClient } from "@angular/common/http";
+import { APIPlatformPagedCollection } from "../utils/utils";
+import { Inject, Injectable} from '@angular/core';
+
+@Injectable()
+export class {{name}}Service {
+
+  constructor(
+    private http: HttpClient,
+    @Inject('BASE_API_URL') private baseUrl: string
+  ) {
+  }
+
+  getCollection(){
+    return this.http.get<{{name}}>(`${this.baseUrl}/api/{{pluralize (toLowerCase (camelCaseToSnakeCase name))}}`);
+  }
+
+  addItem(item: {{name}}){
+    return this.http.post<{{name}}>(`${this.baseUrl}/api/{{pluralize (toLowerCase (camelCaseToSnakeCase name))}}`, item);
+  }
+
+  getItem(id: string){
+    return this.http.get<{{name}}>(`${this.baseUrl}/api/{{pluralize (toLowerCase (camelCaseToSnakeCase name))}}/${id}`);
+  }
+
+  updateItem(item: {{name}}){
+    return this.http.put<{{name}}>(`${this.baseUrl}/api/{{pluralize (toLowerCase (camelCaseToSnakeCase name))}}/${item.id}`, item);
+  }
+
+  deleteItem(id: string){
+    return this.http.delete<{}>(`${this.baseUrl}/api/{{pluralize (toLowerCase (camelCaseToSnakeCase name))}}/${id}`);
+  }
+}
