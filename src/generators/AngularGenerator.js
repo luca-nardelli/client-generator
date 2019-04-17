@@ -57,8 +57,8 @@ export default class AngularGenerator extends BaseGenerator {
       "foo.service.ts.hbs",
       `${dest}/${camelCaseToKebabCase(resource.title)}.service.ts`,
       {
-        fields: fields,
-        imports: imports,
+        fields,
+        imports,
         name: resource.title,
         resourceFile: "../interfaces/" + camelCaseToKebabCase(resource.title)
       }
