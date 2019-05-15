@@ -91,7 +91,7 @@ export default class AngularGenerator extends BaseGenerator {
       case "http://www.w3.org/2001/XMLSchema#date":
       case "http://www.w3.org/2001/XMLSchema#dateTime":
       case "http://www.w3.org/2001/XMLSchema#time":
-        return "Date";
+        return "string";
       case "http://www.w3.org/2001/XMLSchema#string":
         return "string";
     }
@@ -116,7 +116,7 @@ export default class AngularGenerator extends BaseGenerator {
       fields[field.name] = {
         notrequired: !field.required,
         name: field.name,
-        type: this.getType(field),
+        type: field.reference ? (this.getType(field) + ' | string') : this.getType(field),
         description: this.getDescription(field),
         readonly: false,
         reference: field.reference
@@ -131,7 +131,7 @@ export default class AngularGenerator extends BaseGenerator {
       fields[field.name] = {
         notrequired: !field.required,
         name: field.name,
-        type: this.getType(field),
+        type: field.reference ? (this.getType(field) + ' | string') : this.getType(field),
         description: this.getDescription(field),
         readonly: true,
         reference: field.reference
@@ -145,8 +145,8 @@ export default class AngularGenerator extends BaseGenerator {
     for (const field of fieldsArray) {
       if (field.reference) {
         imports[field.type] = {
-          type: field.type,
-          file: "./" + camelCaseToKebabCase(field.type)
+          type: field.reference.title,
+          file: "./" + camelCaseToKebabCase(field.reference.title)
         };
       }
     }
