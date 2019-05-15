@@ -7,8 +7,8 @@ import { Inject, Injectable} from '@angular/core';
 export class {{name}}Service {
 
   constructor(
-    private http: HttpClient,
-    @Inject('BASE_API_URL') private baseUrl: string
+    protected http: HttpClient,
+    @Inject('BASE_API_URL') protected baseUrl: string
   ) {
   }
 
@@ -24,7 +24,10 @@ export class {{name}}Service {
     return this.http.get<{{name}}>(`${this.baseUrl}/api/{{pluralize (toLowerCase (camelCaseToSnakeCase name))}}/${id}`);
   }
 
-  updateItem(item: {{name}}){
+  updateItem(item: {{name}}) {
+    if (item['@id']) {
+      return this.http.put<{{name}}>(`${this.baseUrl}${item['@id']}`, item);
+    }
     return this.http.put<{{name}}>(`${this.baseUrl}/api/{{pluralize (toLowerCase (camelCaseToSnakeCase name))}}/${item.id}`, item);
   }
 
