@@ -2,19 +2,19 @@ import BaseGenerator from "./BaseGenerator";
 import pluralize from "pluralize";
 import Handlebars from "handlebars";
 
-Handlebars.registerHelper("toLowerCase", function (str) {
+Handlebars.registerHelper("toLowerCase", function(str) {
   return str.toLowerCase();
 });
 
-Handlebars.registerHelper("pluralize", function (str) {
+Handlebars.registerHelper("pluralize", function(str) {
   return pluralize(str);
 });
 
-Handlebars.registerHelper("camelCaseToKebabCase", function (str) {
+Handlebars.registerHelper("camelCaseToKebabCase", function(str) {
   return camelCaseToKebabCase(str);
 });
 
-Handlebars.registerHelper("camelCaseToSnakeCase", function (str) {
+Handlebars.registerHelper("camelCaseToSnakeCase", function(str) {
   return camelCaseToSnakeCase(str);
 });
 
@@ -37,7 +37,7 @@ export default class AngularGenerator extends BaseGenerator {
   }
 
   generate(api, resource, dir) {
-    const {fields, imports} = this.parseFields(resource);
+    const { fields, imports } = this.parseFields(resource);
 
     let dest = `${dir}/interfaces`;
     this.createDir(dest, false);
@@ -103,20 +103,23 @@ export default class AngularGenerator extends BaseGenerator {
     return field.description ? field.description.replace(/"/g, "'") : "";
   }
 
-  parseOperations(resource){
+  parseOperations(resource) {
     const operations = resource.operations;
     console.log(operations);
-
   }
 
   parseFields(resource) {
+    if (resource.name === "producers") {
+      console.log(resource);
+    }
+
     const fields = {};
 
     for (let field of resource.writableFields) {
       fields[field.name] = {
         notrequired: !field.required,
         name: field.name,
-        type: field.reference ? (this.getType(field) + ' | string') : this.getType(field),
+        type: this.getReferenceFieldType(field),
         description: this.getDescription(field),
         readonly: false,
         reference: field.reference
@@ -131,10 +134,21 @@ export default class AngularGenerator extends BaseGenerator {
       fields[field.name] = {
         notrequired: !field.required,
         name: field.name,
-        type: field.reference ? (this.getType(field) + ' | string') : this.getType(field),
+        type: this.getReferenceFieldType(field),
         description: this.getDescription(field),
         readonly: true,
         reference: field.reference
+      };
+    }
+
+    // If id is not present, add it manually with default values
+    if (!("id" in fields)) {
+      fields["id"] = {
+        notrequired: true,
+        name: "id",
+        type: "string",
+        description: "id field",
+        readonly: false
       };
     }
 
@@ -153,8 +167,21 @@ export default class AngularGenerator extends BaseGenerator {
 
     const importsArray = Object.keys(imports).map(e => imports[e]);
 
-    return {fields: fieldsArray, imports: importsArray};
+    return { fields: fieldsArray, imports: importsArray };
   }
+
+  getReferenceFieldType(field) {
+    if (field.maxCardinality === 1) {
+      return field.reference
+        ? this.getType(field) + " | string"
+        : this.getType(field);
+    } else {
+      return field.reference
+        ? this.getType(field) + "[]" + " | string[]"
+        : this.getType(field) + "[]";
+    }
+  }
+
 }
 
 function camelCaseToKebabCase(val) {
