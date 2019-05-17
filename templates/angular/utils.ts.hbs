@@ -1,23 +1,28 @@
-export interface APIPlatformPagedCollection<T> {
-  "{{hydraPrefix}}totalItems"?: number;
-  "{{hydraPrefix}}member"?: T[];
-  "@context"?: string;
-  "@id"?: string;
-  "@type"?: string;
-  "{{hydraPrefix}}view"?: {
-    "@id"?: string;
-    "@type"?: string;
-    "{{hydraPrefix}}first"?: string;
-    "{{hydraPrefix}}last"?: string;
-    "{{hydraPrefix}}previous"?: string;
-    "{{hydraPrefix}}next"?: string;
+export interface ApiPlatformPagedCollection<T> {
+  '{{hydraPrefix}}totalItems'?: number;
+  '{{hydraPrefix}}member'?: T[];
+  '@context'?: string;
+  '@id'?: string;
+  '@type'?: string;
+  '{{hydraPrefix}}view'?: {
+    '@id'?: string;
+    '@type'?: string;
+    '{{hydraPrefix}}first'?: string;
+    '{{hydraPrefix}}last'?: string;
+    '{{hydraPrefix}}previous'?: string;
+    '{{hydraPrefix}}next'?: string;
   };
 }
 
-export interface APIPlatformCollection<T> {
-  "{{hydraPrefix}}totalItems"?: number;
-  "{{hydraPrefix}}member"?: T[];
-  "@context"?: string;
-  "@id"?: string;
-  "@type"?: string;
+export interface ApiPlatformCollection<T> {
+  '{{hydraPrefix}}totalItems'?: number;
+  '{{hydraPrefix}}member'?: T[];
+  '@context'?: string;
+  '@id'?: string;
+  '@type'?: string;
+}
+
+export interface ApiPlatformIdentifier {
+  '@id'?: string;
+  id?: string;
 }
