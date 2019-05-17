@@ -109,10 +109,6 @@ export default class AngularGenerator extends BaseGenerator {
   }
 
   parseFields(resource) {
-    if (resource.name === "producers") {
-      console.log(resource);
-    }
-
     const fields = {};
 
     for (let field of resource.writableFields) {
@@ -178,7 +174,7 @@ export default class AngularGenerator extends BaseGenerator {
     } else {
       return field.reference
         ? this.getType(field) + "[]" + " | string[]"
-        : this.getType(field) + "[]";
+        : this.getType(field);
     }
   }
 
