@@ -24,6 +24,7 @@ export default class AngularGenerator extends BaseGenerator {
 
     this.registerTemplates(`angular/`, [
       "interface.ts.hbs",
+      "generic-interface.ts.hbs",
       "foo.service.ts.hbs",
       "utils.ts.hbs"
     ]);
@@ -43,6 +44,18 @@ export default class AngularGenerator extends BaseGenerator {
     this.createDir(dest, false);
     this.createFile(
       "interface.ts.hbs",
+      `${dest}/${camelCaseToKebabCase(resource.title)}.ts`,
+      {
+        fields: fields,
+        imports: imports,
+        name: resource.title
+      }
+    );
+
+    dest = `${dir}/interfaces/generic`;
+    this.createDir(dest, false);
+    this.createFile(
+      "generic-interface.ts.hbs",
       `${dest}/${camelCaseToKebabCase(resource.title)}.ts`,
       {
         fields: fields,

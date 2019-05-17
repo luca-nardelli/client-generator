@@ -1,0 +1,6 @@
+export interface {{{name}}}<{{#each fields}}{{#if reference}}{{reference.title}},{{/if}}{{/each}}> {
+  '@id'?: string;
+{{#each fields}}
+  {{#if readonly}} readonly{{/if}} {{{name}}}{{#if notrequired}}?{{/if}}: {{#if reference}}{{reference.title}}{{else}}{{{type}}}{{/if}};
+{{/each}}
+}
