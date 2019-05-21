@@ -2,43 +2,43 @@ import BaseGenerator from "./BaseGenerator";
 import pluralize from "pluralize";
 import Handlebars from "handlebars";
 
-Handlebars.registerHelper("toLowerCase", function(str) {
+Handlebars.registerHelper("toLowerCase", function (str) {
   return str.toLowerCase();
 });
 
-Handlebars.registerHelper("pluralize", function(str) {
+Handlebars.registerHelper("pluralize", function (str) {
   return pluralize(str);
 });
 
-Handlebars.registerHelper("camelCaseToKebabCase", function(str) {
+Handlebars.registerHelper("camelCaseToKebabCase", function (str) {
   return camelCaseToKebabCase(str);
 });
 
-Handlebars.registerHelper("camelCaseToSnakeCase", function(str) {
+Handlebars.registerHelper("camelCaseToSnakeCase", function (str) {
   return camelCaseToSnakeCase(str);
 });
 
-export default class AngularGenerator extends BaseGenerator {
+export default class VuePluginAxiosGenerator extends BaseGenerator {
   constructor(params) {
     super(params);
 
-    this.registerTemplates(`angular/`, [
+    this.registerTemplates(`vue-plugin-axios/`, [
       "interface.ts.hbs",
       "generic-interface.ts.hbs",
-      "foo.service.ts.hbs",
+      "foo-service.ts.hbs",
       "utils.ts.hbs"
     ]);
   }
 
   help(resource) {
     console.log(
-      'Angular interface and service for the resource "%s" type has been generated!',
+      'Vue plugin info and service for the resource "%s" type have been generated!',
       resource.title
     );
   }
 
   generate(api, resource, dir) {
-    const { fields, imports } = this.parseFields(resource);
+    const {fields, imports} = this.parseFields(resource);
 
     let dest = `${dir}/interfaces`;
     this.createDir(dest, false);
@@ -52,14 +52,23 @@ export default class AngularGenerator extends BaseGenerator {
       }
     );
 
+    let generics = {};
+    for (const f of fields) {
+      if (f.reference) {
+        generics[f.reference.title] = {name: f.reference.title};
+      }
+    }
+    generics = Object.keys(generics).map(e => generics[e]);
+
     dest = `${dir}/interfaces/generic`;
     this.createDir(dest, false);
     this.createFile(
       "generic-interface.ts.hbs",
       `${dest}/${camelCaseToKebabCase(resource.title)}.ts`,
       {
-        fields: fields,
-        imports: imports,
+        fields,
+        imports,
+        generics,
         name: resource.title
       }
     );
@@ -67,8 +76,8 @@ export default class AngularGenerator extends BaseGenerator {
     dest = `${dir}/services`;
     this.createDir(dest, false);
     this.createFile(
-      "foo.service.ts.hbs",
-      `${dest}/${camelCaseToKebabCase(resource.title)}.service.ts`,
+      "foo-service.ts.hbs",
+      `${dest}/${camelCaseToKebabCase(resource.title)}-service.ts`,
       {
         fields,
         imports,
@@ -131,7 +140,8 @@ export default class AngularGenerator extends BaseGenerator {
         type: this.getReferenceFieldType(field),
         description: this.getDescription(field),
         readonly: false,
-        reference: field.reference
+        reference: field.reference,
+        maxCardinality: field.maxCardinality
       };
     }
 
@@ -146,7 +156,8 @@ export default class AngularGenerator extends BaseGenerator {
         type: this.getReferenceFieldType(field),
         description: this.getDescription(field),
         readonly: true,
-        reference: field.reference
+        reference: field.reference,
+        maxCardinality: field.maxCardinality
       };
     }
 
@@ -176,7 +187,7 @@ export default class AngularGenerator extends BaseGenerator {
 
     const importsArray = Object.keys(imports).map(e => imports[e]);
 
-    return { fields: fieldsArray, imports: importsArray };
+    return {fields: fieldsArray, imports: importsArray};
   }
 
   getReferenceFieldType(field) {

@@ -7,6 +7,7 @@ import VueGenerator from "./generators/VueGenerator";
 import VuetifyGenerator from "./generators/VuetifyGenerator";
 import QuasarGenerator from "./generators/QuasarGenerator";
 import AngularGenerator from "./generators/AngularGenerator";
+import VuePluginAxiosGenerator from "./generators/VuePluginAxiosGenerator";
 
 function wrap(cl) {
   return ({ hydraPrefix, templateDirectory }) =>
@@ -33,5 +34,7 @@ export default function generators(generator = "react") {
       return wrap(QuasarGenerator);
     case "angular":
       return wrap(AngularGenerator);
+    case "vue-plugin-axios":
+      return wrap(VuePluginAxiosGenerator);
   }
 }

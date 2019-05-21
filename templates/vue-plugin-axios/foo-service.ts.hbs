@@ -1,0 +1,44 @@
+import { {{~name~}} } from '{{resourceFile}}';
+import {AxiosInstance} from "axios";
+import {ApiPlatformPagedCollection, ApiPlatformIdentifier} from '../utils/utils';
+
+export class {{name}}Service {
+
+  static readonly RESOURCE_NAME = '{{pluralize (toLowerCase (camelCaseToSnakeCase name))}}';
+
+  constructor(
+    protected http: AxiosInstance
+  ) {
+  }
+
+  getCollection() {
+    return this.http.get<ApiPlatformPagedCollection<{{name}}>>(`/api/${ {{~name~}}Service.RESOURCE_NAME}`);
+  }
+
+  addItem(item: {{name}}) {
+    return this.http.post<{{name}}>(`/api/${ {{~name~}}Service.RESOURCE_NAME}`, item);
+  }
+
+  getItem(id: ApiPlatformIdentifier) {
+    return this.http.get<{{name}}>(`${ {{~name~}}Service.buildIri(id)}`);
+  }
+
+  updateItem(item: {{name}}) {
+    return this.http.put<{{name}}>(`${ {{~name~}}Service.buildIri(item)}`, item);
+  }
+
+  deleteItem(id: ApiPlatformIdentifier) {
+    return this.http.delete(`${ {{~name~}}Service.buildIri(id)}`);
+  }
+
+  static buildIri(id?: ApiPlatformIdentifier): string {
+    if (id && id.id) {
+      return `/api/${ {{~name~}}Service.RESOURCE_NAME}/${id.id}`;
+    } else if (id && id['@id']) {
+      return `${id['@id']}`;
+    } else {
+      return `/api/${ {{~name~}}Service.RESOURCE_NAME}`;
+    }
+  }
+
+}
