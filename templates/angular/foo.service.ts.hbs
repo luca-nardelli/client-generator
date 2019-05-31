@@ -1,6 +1,6 @@
 import { {{~name~}} } from '{{resourceFile}}';
 import {HttpClient} from '@angular/common/http';
-import {ApiPlatformPagedCollection, ApiPlatformIdentifier} from '../utils/utils';
+import {ApiPlatformPagedCollection, ApiPlatformIdentifier, HttpClientGetOptions} from '../utils/utils';
 import {Inject, Injectable} from '@angular/core';
 
 @Injectable()
@@ -14,16 +14,16 @@ export class {{name}}Service {
   ) {
   }
 
-  getCollection() {
-    return this.http.get<{{name}}>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`);
+  getCollection(options?: HttpClientGetOptions) {
+    return this.http.get<ApiPlatformPagedCollection<{{name}}>>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`,options);
   }
 
   addItem(item: {{name}}) {
     return this.http.post<{{name}}>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`, item);
   }
 
-  getItem(id: ApiPlatformIdentifier) {
-    return this.http.get<{{name}}>(`${this.baseUrl}${this.buildIri(id)}`);
+  getItem(id: ApiPlatformIdentifier, options?: HttpClientGetOptions) {
+    return this.http.get<{{name}}>(`${this.baseUrl}${this.buildIri(id)}`, options);
   }
 
   updateItem(item: {{name}}) {

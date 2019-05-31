@@ -1,5 +1,5 @@
 import { {{~name~}} } from '{{resourceFile}}';
-import {AxiosInstance} from "axios";
+import {AxiosInstance, AxiosRequestConfig} from "axios";
 import {ApiPlatformPagedCollection, ApiPlatformIdentifier} from '../utils/utils';
 
 export class {{name}}Service {
@@ -11,16 +11,16 @@ export class {{name}}Service {
   ) {
   }
 
-  getCollection() {
-    return this.http.get<ApiPlatformPagedCollection<{{name}}>>(`/api/${ {{~name~}}Service.RESOURCE_NAME}`);
+  getCollection(config?: AxiosRequestConfig) {
+    return this.http.get<ApiPlatformPagedCollection<{{name}}>>(`/api/${ {{~name~}}Service.RESOURCE_NAME}`,config);
   }
 
   addItem(item: {{name}}) {
     return this.http.post<{{name}}>(`/api/${ {{~name~}}Service.RESOURCE_NAME}`, item);
   }
 
-  getItem(id: ApiPlatformIdentifier) {
-    return this.http.get<{{name}}>(`${ {{~name~}}Service.buildIri(id)}`);
+  getItem(id: ApiPlatformIdentifier,config?: AxiosRequestConfig) {
+    return this.http.get<{{name}}>(`${ {{~name~}}Service.buildIri(id)}`,config);
   }
 
   updateItem(item: {{name}}) {

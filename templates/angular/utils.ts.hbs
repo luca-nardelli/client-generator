@@ -1,3 +1,5 @@
+import {HttpHeaders, HttpParams} from '@angular/common/http';
+
 export interface ApiPlatformPagedCollection<T> {
   '{{hydraPrefix}}totalItems'?: number;
   '{{hydraPrefix}}member'?: T[];
@@ -25,4 +27,18 @@ export interface ApiPlatformCollection<T> {
 export interface ApiPlatformIdentifier {
   '@id'?: string;
   id?: string;
+}
+
+
+export interface HttpClientGetOptions {
+  headers?: HttpHeaders | {
+    [header: string]: string | string[];
+  };
+  observe?: 'body';
+  params?: HttpParams | {
+    [param: string]: string | string[];
+  };
+  reportProgress?: boolean;
+  responseType?: 'json';
+  withCredentials?: boolean;
 }
