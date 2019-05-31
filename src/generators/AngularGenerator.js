@@ -52,14 +52,23 @@ export default class AngularGenerator extends BaseGenerator {
       }
     );
 
+    let generics = {};
+    for (const f of fields) {
+      if (f.reference) {
+        generics[f.reference.title] = {name: f.reference.title};
+      }
+    }
+    generics = Object.keys(generics).map(e => generics[e]);
+
     dest = `${dir}/interfaces/generic`;
     this.createDir(dest, false);
     this.createFile(
       "generic-interface.ts.hbs",
       `${dest}/${camelCaseToKebabCase(resource.title)}.ts`,
       {
-        fields: fields,
-        imports: imports,
+        fields,
+        imports,
+        generics,
         name: resource.title
       }
     );
@@ -131,7 +140,8 @@ export default class AngularGenerator extends BaseGenerator {
         type: this.getReferenceFieldType(field),
         description: this.getDescription(field),
         readonly: false,
-        reference: field.reference
+        reference: field.reference,
+        maxCardinality: field.maxCardinality || null
       };
     }
 
@@ -146,7 +156,8 @@ export default class AngularGenerator extends BaseGenerator {
         type: this.getReferenceFieldType(field),
         description: this.getDescription(field),
         readonly: true,
-        reference: field.reference
+        reference: field.reference,
+        maxCardinality: field.maxCardinality || null
       };
     }
 
