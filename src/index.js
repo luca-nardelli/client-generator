@@ -26,8 +26,12 @@ program
   .option("--username [username]", "Username for basic auth (Hydra only)")
   .option("--password [password]", "Password for basic auth (Hydra only)")
   .option(
+    "--resource-prefix [serverPath]",
+    "Prefix to append for generated resources (useful to avoid naming conflicts)"
+  )
+  .option(
     "-g, --generator [generator]",
-    'The generator to use, one of "react", "react-native", "vue", "admin-on-rest", "typescript", "next"',
+    'The generator to use, one of "react", "react-native", "vue", "admin-on-rest", "typescript", "next", "angular", "vue-plugin-axios", "flutter-dio"',
     "react"
   )
   .option(
@@ -105,6 +109,10 @@ parser(entrypointWithSlash)
         );
       })
       .map(resource => {
+        resource.prefixedTitle = `${program.resourcePrefix}${resource.title}`;
+        return resource;
+      })
+      .map(resource => {
         const filterDeprecated = list =>
           list.filter(({ deprecated }) => !deprecated);
 
@@ -118,6 +126,7 @@ parser(entrypointWithSlash)
       })
       // display helps after all resources have been generated to check relation dependency for example
       .forEach(resource => generator.help(resource, outputDirectory));
+    generator.finalize(outputDirectory);
   })
   .catch(e => {
     console.log(e);

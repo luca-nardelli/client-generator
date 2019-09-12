@@ -1,0 +1,15 @@
+import 'maker.dart';
+
+class ApiPlatformPagedCollection<T extends BaseModel> {
+  int totalItems;
+  List<T> member;
+
+  ApiPlatformPagedCollection.fromJson(Map<String, dynamic> json)
+      : totalItems = json['{{hydraPrefix}}totalItems'],
+        member = (json['{{hydraPrefix}}member'] as List).map((elem) => make<T>(elem)).toList();
+
+  Map<String, dynamic> toJson() => {
+        "{{hydraPrefix}}totalItems": totalItems,
+        "{{hydraPrefix}}member": member.map((elem) => elem.toJson()).toList(),
+      };
+}
