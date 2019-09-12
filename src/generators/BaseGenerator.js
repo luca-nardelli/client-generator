@@ -61,6 +61,9 @@ export default class {
   // eslint-disable-next-line no-unused-vars
   checkDependencies(dir) {}
 
+  // eslint-disable-next-line no-unused-vars
+  finalize(dir) {}
+
   getTargetDependencies(dir) {
     const packageFilePath = `${dir}/package.json`;
     let packageFile;

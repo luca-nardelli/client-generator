@@ -4,7 +4,7 @@ import "isomorphic-fetch";
 import program from "commander";
 import parseHydraDocumentation from "@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation";
 import parseSwaggerDocumentation from "@api-platform/api-doc-parser/lib/swagger/parseSwaggerDocumentation";
-import { version } from "../package.json";
+import {version} from "../package.json";
 import generators from "./generators";
 
 program
@@ -23,8 +23,12 @@ program
     "hydra:"
   )
   .option(
+    "--resource-prefix [serverPath]",
+    "Prefix to append for generated resources (useful to avoid naming conflicts)"
+  )
+  .option(
     "-g, --generator [generator]",
-    'The generator to use, one of "react", "react-native", "vue", "admin-on-rest", "typescript", "next"',
+    'The generator to use, one of "react", "react-native", "vue", "admin-on-rest", "typescript", "next", "angular", "vue-plugin-axios", "flutter-dio"',
     "react"
   )
   .option(
@@ -80,7 +84,7 @@ generator.checkDependencies(outputDirectory, serverPath);
 parser(entrypointWithSlash)
   .then(ret => {
     ret.api.resources
-      .filter(({ deprecated }) => !deprecated)
+      .filter(({deprecated}) => !deprecated)
       .filter(resource => {
         const nameLc = resource.name.toLowerCase();
         const titleLc = resource.title.toLowerCase();
@@ -92,8 +96,12 @@ parser(entrypointWithSlash)
         );
       })
       .map(resource => {
+        resource.prefixedTitle = `${program.resourcePrefix}${resource.title}`;
+        return resource;
+      })
+      .map(resource => {
         const filterDeprecated = list =>
-          list.filter(({ deprecated }) => !deprecated);
+          list.filter(({deprecated}) => !deprecated);
 
         resource.fields = filterDeprecated(resource.fields);
         resource.readableFields = filterDeprecated(resource.readableFields);
@@ -105,6 +113,7 @@ parser(entrypointWithSlash)
       })
       // display helps after all resources have been generated to check relation dependency for example
       .forEach(resource => generator.help(resource, outputDirectory));
+    generator.finalize(outputDirectory);
   })
   .catch(e => {
     console.log(e);

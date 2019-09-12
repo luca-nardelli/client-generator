@@ -1,0 +1,54 @@
+import '../utils/maker.dart';
+{{#each imports}}
+import '{{file}}';
+{{/each}}
+
+class {{name}} extends BaseModel {
+{{#each fields}}
+  {{~#if reference}}
+    {{~#if maxCardinality}}
+  {{{type}}} {{{name}}}
+    {{~else}}
+  List<{{{type}}}> {{{name}}}
+    {{~/if}}
+  {{~else}}
+  {{{type}}} {{{name}}}
+  {{~/if}};
+{{/each}}
+
+  {{name}}({iri{{#each fields}}, this.{{name}}{{/each~}} }) : super(iri: iri);
+
+  {{name}}.fromJson(Map<String, dynamic> json)
+      :
+{{~#each fields}}
+  {{~#if @first}} {{else}}        {{/if}}
+  {{~#if reference}}
+    {{~#if maxCardinality}}
+      {{~name}} = {{type}}.fromJsonOrIri(json['{{name}}'])
+    {{~else}}
+      {{~name}} = (json['{{name}}'] as List).map((elem) => {{type}}.fromJsonOrIri(elem)).toList()
+    {{~/if}}
+  {{~else~}}
+    {{~name}} = json['{{name}}']
+  {{~/if}},
+{{/each}}
+        super.fromJson(json);
+
+  {{name}}.fromIri(String iri) : super.fromIri(iri);
+
+  factory {{name}}.fromJsonOrIri(dynamic jsonOrIri) {
+    if (jsonOrIri is String) {
+      return {{name}}.fromIri(jsonOrIri);
+    } else if (jsonOrIri is Map) {
+      return {{name}}.fromJson(jsonOrIri);
+    }
+    return null;
+  }
+
+  toJson() => {
+        "@id": iri,
+{{#each fields}}
+        "{{name}}": {{name}},
+{{/each}}
+      };
+}

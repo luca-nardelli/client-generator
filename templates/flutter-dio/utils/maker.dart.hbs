@@ -1,0 +1,36 @@
+{{#each imports}}
+import '../models/{{file}}';
+{{/each}}
+
+typedef T JsonConstructor<T>(Map<String, dynamic> json);
+
+abstract class BaseModel {
+  String iri;
+  bool _shallow;
+
+  BaseModel({this.iri}) : _shallow = false;
+
+  BaseModel.fromJson(Map<String, dynamic> json)
+      : iri = json['@id'],
+        _shallow = false;
+
+  BaseModel.fromIri(String iri)
+      : iri = iri,
+        _shallow = true;
+
+  isShallow() => _shallow;
+
+  Map<String, dynamic> toJson();
+
+  toIri() => iri;
+}
+
+T make<T extends BaseModel>(Map<String, dynamic> json) {
+  return baseModelFactories[T](json);
+}
+
+final baseModelFactories = <Type, JsonConstructor>{
+{{#each imports}}
+  {{type}}: (json) => {{type}}.fromJson(json),
+{{/each}}
+};

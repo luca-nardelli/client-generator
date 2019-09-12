@@ -7,6 +7,7 @@ import VueGenerator from "./generators/VueGenerator";
 import QuasarGenerator from "./generators/QuasarGenerator";
 import AngularGenerator from "./generators/AngularGenerator";
 import VuePluginAxiosGenerator from "./generators/VuePluginAxiosGenerator";
+import FlutterDioGenerator from "./generators/FlutterDioGenerator";
 
 function wrap(cl) {
   return ({ hydraPrefix, templateDirectory }) =>
@@ -33,5 +34,7 @@ export default function generators(generator = "react") {
       return wrap(AngularGenerator);
     case "vue-plugin-axios":
       return wrap(VuePluginAxiosGenerator);
+    case "flutter-dio":
+      return wrap(FlutterDioGenerator);
   }
 }

@@ -1,0 +1,111 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+
+import '../models/{{resourceFile}}';
+import '../utils/api-platform.dart';
+
+class {{prefixedName}}Service {
+  Dio client;
+
+  static const RESOURCE_NAME = '{{pluralize (toLowerCase (camelCaseToSnakeCase name))}}';
+
+  {{prefixedName}}Service(this.client);
+
+  Future<ApiPlatformPagedCollection<{{prefixedName}}>> getCollection({
+    Map<String, dynamic> queryParameters,
+    Options options,
+    CancelToken cancelToken,
+    ProgressCallback onReceiveProgress,
+  }) {
+    if (options == null) {
+      options = Options();
+    }
+    options.responseType = ResponseType.json;
+    options.contentType = ContentType.json;
+    options.headers['Accept'] = 'application/ld+json';
+    return client
+        .get(buildIri(), queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress)
+        .then((resp) {
+      if (resp.data is String) {
+        resp.data = jsonDecode(resp.data);
+      }
+      return ApiPlatformPagedCollection<{{prefixedName}}>.fromJson(resp.data);
+    });
+  }
+
+  getItem({
+    String id,
+    String iri,
+    Map<String, dynamic> queryParameters,
+    Options options,
+    CancelToken cancelToken,
+    ProgressCallback onReceiveProgress,
+  }) {
+    return client
+        .get(buildIri(id: id, iri: iri), queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress)
+        .then((resp) {
+      if (resp.data is String) {
+        resp.data = jsonDecode(resp.data);
+      }
+      return {{prefixedName}}.fromJson(resp.data);
+    });
+  }
+
+  addItem({
+    {{prefixedName}} data,
+    Map<String, dynamic> queryParameters,
+    Options options,
+    CancelToken cancelToken,
+    ProgressCallback onSendProgress,
+    ProgressCallback onReceiveProgress,
+  }) {
+    return client.post(buildIri(),
+        data: data.toJson(),
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onReceiveProgress: onReceiveProgress,
+        onSendProgress: onSendProgress);
+  }
+
+  updateItem({
+    String id,
+    String iri,
+    {{prefixedName}} data,
+    Map<String, dynamic> queryParameters,
+    Options options,
+    CancelToken cancelToken,
+    ProgressCallback onSendProgress,
+    ProgressCallback onReceiveProgress,
+  }) {
+    return client.put(buildIri(id: id, iri: iri),
+        data: data.toJson(),
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onReceiveProgress: onReceiveProgress,
+        onSendProgress: onSendProgress);
+  }
+
+  deleteItem({
+    String id,
+    String iri,
+    Map<String, dynamic> queryParameters,
+    Options options,
+    CancelToken cancelToken,
+  }) {
+    return client.delete(buildIri(id: id, iri: iri), queryParameters: queryParameters, options: options, cancelToken: cancelToken);
+  }
+
+  static buildIri({String id, String iri}) {
+    if (id != null) {
+      return "/api/$RESOURCE_NAME/$id";
+    } else if (iri != null) {
+      return iri;
+    } else {
+      return "/api/$RESOURCE_NAME";
+    }
+  }
+}
