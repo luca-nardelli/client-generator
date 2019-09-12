@@ -55,7 +55,7 @@ export default class AngularGenerator extends BaseGenerator {
     let generics = {};
     for (const f of fields) {
       if (f.reference) {
-        generics[f.reference.title] = {name: f.reference.title};
+        generics[f.reference.title] = { name: f.reference.title };
       }
     }
     generics = Object.keys(generics).map(e => generics[e]);
@@ -201,7 +201,6 @@ export default class AngularGenerator extends BaseGenerator {
         : this.getType(field);
     }
   }
-
 }
 
 function camelCaseToKebabCase(val) {
