@@ -2,19 +2,19 @@ import BaseGenerator from "./BaseGenerator";
 import pluralize from "pluralize";
 import Handlebars from "handlebars";
 
-Handlebars.registerHelper("toLowerCase", function (str) {
+Handlebars.registerHelper("toLowerCase", function(str) {
   return str.toLowerCase();
 });
 
-Handlebars.registerHelper("pluralize", function (str) {
+Handlebars.registerHelper("pluralize", function(str) {
   return pluralize(str);
 });
 
-Handlebars.registerHelper("camelCaseToKebabCase", function (str) {
+Handlebars.registerHelper("camelCaseToKebabCase", function(str) {
   return camelCaseToKebabCase(str);
 });
 
-Handlebars.registerHelper("camelCaseToSnakeCase", function (str) {
+Handlebars.registerHelper("camelCaseToSnakeCase", function(str) {
   return camelCaseToSnakeCase(str);
 });
 
@@ -38,7 +38,7 @@ export default class VuePluginAxiosGenerator extends BaseGenerator {
   }
 
   generate(api, resource, dir) {
-    const {fields, imports} = this.parseFields(resource);
+    const { fields, imports } = this.parseFields(resource);
 
     let dest = `${dir}/interfaces`;
     this.createDir(dest, false);
@@ -55,7 +55,7 @@ export default class VuePluginAxiosGenerator extends BaseGenerator {
     let generics = {};
     for (const f of fields) {
       if (f.reference) {
-        generics[f.reference.title] = {name: f.reference.title};
+        generics[f.reference.title] = { name: f.reference.title };
       }
     }
     generics = Object.keys(generics).map(e => generics[e]);
@@ -187,7 +187,7 @@ export default class VuePluginAxiosGenerator extends BaseGenerator {
 
     const importsArray = Object.keys(imports).map(e => imports[e]);
 
-    return {fields: fieldsArray, imports: importsArray};
+    return { fields: fieldsArray, imports: importsArray };
   }
 
   getReferenceFieldType(field) {
@@ -201,7 +201,6 @@ export default class VuePluginAxiosGenerator extends BaseGenerator {
         : this.getType(field);
     }
   }
-
 }
 
 function camelCaseToKebabCase(val) {

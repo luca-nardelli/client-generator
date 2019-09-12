@@ -4,7 +4,7 @@ import "isomorphic-fetch";
 import program from "commander";
 import parseHydraDocumentation from "@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation";
 import parseSwaggerDocumentation from "@api-platform/api-doc-parser/lib/swagger/parseSwaggerDocumentation";
-import {version} from "../package.json";
+import { version } from "../package.json";
 import generators from "./generators";
 
 program
@@ -84,7 +84,7 @@ generator.checkDependencies(outputDirectory, serverPath);
 parser(entrypointWithSlash)
   .then(ret => {
     ret.api.resources
-      .filter(({deprecated}) => !deprecated)
+      .filter(({ deprecated }) => !deprecated)
       .filter(resource => {
         const nameLc = resource.name.toLowerCase();
         const titleLc = resource.title.toLowerCase();
@@ -101,7 +101,7 @@ parser(entrypointWithSlash)
       })
       .map(resource => {
         const filterDeprecated = list =>
-          list.filter(({deprecated}) => !deprecated);
+          list.filter(({ deprecated }) => !deprecated);
 
         resource.fields = filterDeprecated(resource.fields);
         resource.readableFields = filterDeprecated(resource.readableFields);
