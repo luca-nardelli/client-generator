@@ -23,7 +23,7 @@ class {{prefixedName}}Service {
       options = Options();
     }
     options.responseType = ResponseType.json;
-    options.contentType = ContentType.json;
+    options.contentType = ContentType.json.toString();
     options.headers['Accept'] = 'application/ld+json';
     return client
         .get(buildIri(), queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress)
@@ -43,6 +43,9 @@ class {{prefixedName}}Service {
     CancelToken cancelToken,
     ProgressCallback onReceiveProgress,
   }) {
+    options.responseType = ResponseType.json;
+    options.contentType = ContentType.json.toString();
+    options.headers['Accept'] = 'application/ld+json';
     return client
         .get(buildIri(id: id, iri: iri), queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress)
         .then((resp) {
@@ -61,6 +64,9 @@ class {{prefixedName}}Service {
     ProgressCallback onSendProgress,
     ProgressCallback onReceiveProgress,
   }) {
+    options.responseType = ResponseType.json;
+    options.contentType = ContentType.json.toString();
+    options.headers['Accept'] = 'application/ld+json';
     return client.post(buildIri(),
         data: data.toJson(),
         queryParameters: queryParameters,
@@ -80,6 +86,9 @@ class {{prefixedName}}Service {
     ProgressCallback onSendProgress,
     ProgressCallback onReceiveProgress,
   }) {
+    options.responseType = ResponseType.json;
+    options.contentType = ContentType.json.toString();
+    options.headers['Accept'] = 'application/ld+json';
     return client.put(buildIri(id: id, iri: iri),
         data: data.toJson(),
         queryParameters: queryParameters,
@@ -96,6 +105,9 @@ class {{prefixedName}}Service {
     Options options,
     CancelToken cancelToken,
   }) {
+    options.responseType = ResponseType.json;
+    options.contentType = ContentType.json.toString();
+    options.headers['Accept'] = 'application/ld+json';
     return client.delete(buildIri(id: id, iri: iri), queryParameters: queryParameters, options: options, cancelToken: cancelToken);
   }
 
