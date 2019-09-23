@@ -26,7 +26,7 @@ class {{name}} extends BaseModel {
     {{~#if maxCardinality}}
       {{~name}} = {{type}}.fromJsonOrIri(json['{{name}}'])
     {{~else}}
-      {{~name}} = (json['{{name}}'] as List).map((elem) => {{type}}.fromJsonOrIri(elem)).toList()
+      {{~name}} = (json['{{name}}'] as List ?? []).map((elem) => {{type}}.fromJsonOrIri(elem)).toList()
     {{~/if}}
   {{~else~}}
     {{~name}} = json['{{name}}']
