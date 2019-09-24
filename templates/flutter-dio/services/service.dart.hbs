@@ -35,7 +35,7 @@ class {{prefixedName}}Service {
     });
   }
 
-  getItem({
+  Future<{{prefixedName}}> getItem({
     String id,
     String iri,
     Map<String, dynamic> queryParameters,
@@ -43,6 +43,9 @@ class {{prefixedName}}Service {
     CancelToken cancelToken,
     ProgressCallback onReceiveProgress,
   }) {
+    if (options == null) {
+      options = Options();
+    }
     options.responseType = ResponseType.json;
     options.contentType = ContentType.json.toString();
     options.headers['Accept'] = 'application/ld+json';
@@ -56,7 +59,7 @@ class {{prefixedName}}Service {
     });
   }
 
-  addItem({
+  Future<{{prefixedName}}> addItem({
     {{prefixedName}} data,
     Map<String, dynamic> queryParameters,
     Options options,
@@ -64,19 +67,29 @@ class {{prefixedName}}Service {
     ProgressCallback onSendProgress,
     ProgressCallback onReceiveProgress,
   }) {
+    if (options == null) {
+      options = Options();
+    }
     options.responseType = ResponseType.json;
     options.contentType = ContentType.json.toString();
     options.headers['Accept'] = 'application/ld+json';
-    return client.post(buildIri(),
-        data: data.toJson(),
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-        onReceiveProgress: onReceiveProgress,
-        onSendProgress: onSendProgress);
+    return client
+        .post(buildIri(),
+            data: data.toJson(),
+            queryParameters: queryParameters,
+            options: options,
+            cancelToken: cancelToken,
+            onReceiveProgress: onReceiveProgress,
+            onSendProgress: onSendProgress)
+        .then((resp) {
+      if (resp.data is String) {
+        resp.data = jsonDecode(resp.data);
+      }
+      return {{prefixedName}}.fromJson(resp.data);
+    });
   }
 
-  updateItem({
+  Future<{{prefixedName}}> updateItem({
     String id,
     String iri,
     {{prefixedName}} data,
@@ -86,25 +99,38 @@ class {{prefixedName}}Service {
     ProgressCallback onSendProgress,
     ProgressCallback onReceiveProgress,
   }) {
+    if (options == null) {
+      options = Options();
+    }
     options.responseType = ResponseType.json;
     options.contentType = ContentType.json.toString();
     options.headers['Accept'] = 'application/ld+json';
-    return client.put(buildIri(id: id, iri: iri),
-        data: data.toJson(),
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-        onReceiveProgress: onReceiveProgress,
-        onSendProgress: onSendProgress);
+    return client
+        .put(buildIri(id: id, iri: iri),
+            data: data.toJson(),
+            queryParameters: queryParameters,
+            options: options,
+            cancelToken: cancelToken,
+            onReceiveProgress: onReceiveProgress,
+            onSendProgress: onSendProgress)
+        .then((resp) {
+      if (resp.data is String) {
+        resp.data = jsonDecode(resp.data);
+      }
+      return {{prefixedName}}.fromJson(resp.data);
+    });
   }
 
-  deleteItem({
+  Future<Response> deleteItem({
     String id,
     String iri,
     Map<String, dynamic> queryParameters,
     Options options,
     CancelToken cancelToken,
   }) {
+    if (options == null) {
+      options = Options();
+    }
     options.responseType = ResponseType.json;
     options.contentType = ContentType.json.toString();
     options.headers['Accept'] = 'application/ld+json';
