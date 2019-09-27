@@ -20,11 +20,16 @@ class SerializationOptions {
   SerializationOptions({this.shallow});
 }
 
+// Contains metadata used for model fields
+class FieldMetadata {
+  bool dirty = false;
+}
 
-nullSerializer<T,E>(Map<String,dynamic> data, String propName, dynamic propValue, bool isDirty, [Map<Type,Map<Type,SerializationOptions>> rootOptions = null]){
+
+nullSerializer<T>(Map<String,dynamic> data, String propName, dynamic propValue, bool isDirty, [Map<Type,Map<String,SerializationOptions>> rootOptions = null]){
   // Handle Lists
   if (propValue is List){
-    data[propName] = List<E>();
+    data[propName] = List();
     for(final elem in propValue){
       if (elem is BaseModel){
         data[propName].add(elem.toJson(rootOptions));
@@ -38,12 +43,12 @@ nullSerializer<T,E>(Map<String,dynamic> data, String propName, dynamic propValue
   if(propValue == null){
     if(isDirty){
       data[propName] = null;
-      return;
     }
+    return;
   }
 
   // Handle rest
-  final options = rootOptions[T][E] ?? null;
+  final options = rootOptions == null ? null : rootOptions[T][propName] ?? null;
   if( options != null ){
     if(propValue is BaseModel && options.shallow){
       data[propName] = propValue.toIri();

@@ -26,7 +26,7 @@ abstract class BaseModel {
 
   isShallow() => _shallow;
 
-  Map<String, dynamic> toJson([Map<Type,Map<Type,SerializationOptions>> options = null]) {
+  Map<String, dynamic> toJson([Map<Type,Map<String,SerializationOptions>> options = null]) {
     final data = Map<String, dynamic>();
     nullSerializer(data,'@id',iri,iriDirty);
     return data;
