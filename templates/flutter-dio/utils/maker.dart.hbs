@@ -1,32 +1,50 @@
 {{#each imports}}
 import '../models/{{file}}';
 {{/each}}
+import './api-platform.dart';
 
 typedef T JsonConstructor<T>(Map<String, dynamic> json);
 
 abstract class BaseModel {
-  String iri;
+  String _iri;
   bool _shallow;
+  bool _iriDirty = false;
 
-  BaseModel({this.iri}) : _shallow = false;
+  BaseModel({iri}) : _shallow = false {
+    this.iri = iri;
+  }
 
-  BaseModel.fromJson(Map<String, dynamic> json)
-      : iri = json['@id'],
-        _shallow = false;
+  BaseModel.fromJson(Map<String, dynamic> json): _shallow = false {
+    if(json.containsKey('@id')){
+      this.iri = json['@id'];
+    }
+  }
 
-  BaseModel.fromIri(String iri)
-      : iri = iri,
-        _shallow = true;
+  BaseModel.fromIri(String iri): _shallow = true {
+    this.iri = iri;
+  }
 
   isShallow() => _shallow;
 
-  Map<String, dynamic> toJson();
+  Map<String, dynamic> toJson([Map<Type,Map<Type,SerializationOptions>> options = null]) {
+    final data = Map<String, dynamic>();
+    nullSerializer(data,'@id',iri,iriDirty);
+    return data;
+  }
 
   toIri() => iri;
+
+  String get iri { return _iri; }
+  bool get iriDirty { return _iriDirty; }
+  set iri(String val) { _iri = val; _iriDirty = true; }
 }
 
 T make<T extends BaseModel>(Map<String, dynamic> json) {
   return baseModelFactories[T](json);
+}
+
+registerRuntimeBaseModel<T>(JsonConstructor constructor){
+  baseModelFactories[T] = (json) => constructor(json);
 }
 
 final baseModelFactories = <Type, JsonConstructor>{
