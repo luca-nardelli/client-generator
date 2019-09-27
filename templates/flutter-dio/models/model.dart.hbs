@@ -1,4 +1,5 @@
 import '../utils/maker.dart';
+import '../utils/api-platform.dart';
 {{#each imports}}
 import '{{file}}';
 {{/each}}
@@ -7,32 +8,40 @@ class {{name}} extends BaseModel {
 {{#each fields}}
   {{~#if reference}}
     {{~#if maxCardinality}}
-  {{{type}}} {{{name}}}
+  {{{type}}} _{{{name}}}
     {{~else}}
-  List<{{{type}}}> {{{name}}}
+  List<{{{type}}}> _{{{name}}}
     {{~/if}}
   {{~else}}
-  {{{type}}} {{{name}}}
+  {{{type}}} _{{{name}}}
   {{~/if}};
 {{/each}}
 
-  {{name}}({iri{{#each fields}}, this.{{name}}{{/each~}} }) : super(iri: iri);
-
-  {{name}}.fromJson(Map<String, dynamic> json)
-      :
-{{~#each fields}}
-  {{~#if @first}} {{else}}        {{/if}}
-  {{~#if reference}}
-    {{~#if maxCardinality}}
-      {{~name}} = {{type}}.fromJsonOrIri(json['{{name}}'])
-    {{~else}}
-      {{~name}} = (json['{{name}}'] as List ?? []).map((elem) => {{type}}.fromJsonOrIri(elem)).toList()
-    {{~/if}}
-  {{~else~}}
-    {{~name}} = json['{{name}}']
-  {{~/if}},
+{{#each fields}}
+  var _{{name}}Dirty = false;
 {{/each}}
-        super.fromJson(json);
+
+  {{name}}({iri{{#each fields}}, {{name}}{{/each~}} }) : super(iri: iri) {
+  {{#each fields}}
+    this.{{name}} = {{name}};
+  {{/each}}
+  }
+
+  {{name}}.fromJson(Map<String, dynamic> json): super.fromJson(json) {
+{{#each fields}}
+    if (json.containsKey('{{name}}')){
+{{~#if reference}}
+  {{~#if maxCardinality}}
+      {{~name}} = {{type}}.fromJsonOrIri(json['{{name}}']);
+  {{~else}}
+      {{~name}} = (json['{{name}}'] as List ?? []).map((elem) => {{type}}.fromJsonOrIri(elem)).toList();
+  {{~/if}}
+{{~else~}}
+      {{~name}} = json['{{name}}'];
+{{~/if~}}
+    }
+{{/each}}
+  }
 
   {{name}}.fromIri(String iri) : super.fromIri(iri);
 
@@ -45,10 +54,55 @@ class {{name}} extends BaseModel {
     return null;
   }
 
-  toJson() => {
-        "@id": iri,
+  toJson([Map<Type,Map<Type,SerializationOptions>> options = null]) {
+    final data = super.toJson();
 {{#each fields}}
-        "{{name}}": {{name}},
+  {{~#if reference}}
+    {{~#if maxCardinality}}
+    nullSerializer<{{../name}},{{type}}>(data,'{{name}}',{{name}},{{name}}Dirty, options);
+    {{~else}}
+    nullSerializer<{{../name}},{{type}}>(data,'{{name}}',{{name}},{{name}}Dirty, options);
+    {{~/if}}
+  {{~else}}
+    nullSerializer<{{../name}},{{type}}>(data,'{{name}}',{{name}},{{name}}Dirty);
+  {{~/if}}
+
 {{/each}}
-      };
+    return data;
+  }
+
+  // Getters and setters
+{{#each fields}}
+  {{~#if reference}}
+    {{~#if maxCardinality}}
+  {{{type}}} get {{{name}}} { return _{{name}}; }
+  bool get {{{name}}}Dirty { return _{{name}}Dirty; }
+  set {{{name}}}({{{type}}} val) { _{{name}} = val; _{{name}}Dirty = true; }
+    {{~else}}
+  List<{{{type}}}> get {{{name}}} { return _{{name}}; }
+  bool get {{{name}}}Dirty { return _{{name}}Dirty; }
+  set {{{name}}}(List<{{{type}}}> val) { _{{name}} = val; _{{name}}Dirty = true; }
+    {{~/if}}
+  {{~else}}
+  {{{type}}} get {{{name}}} { return _{{name}}; }
+  bool get {{{name}}}Dirty { return _{{name}}Dirty; }
+  set {{{name}}}({{{type}}} val) { _{{name}} = val; _{{name}}Dirty = true; }
+  {{~/if}}
+
+{{/each}}
+
+}
+
+class {{name}}SerializationOptions {
+{{#each fields}}
+  {{~#if reference}}
+
+  {{type}}SerializationOptions {{{name}}};
+  {{~/if}}
+{{/each}}
+
+
+
+
+
 }

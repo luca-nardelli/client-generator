@@ -13,7 +13,7 @@ class {{prefixedName}}Service {
 
   {{prefixedName}}Service(this.client);
 
-  Future<ApiPlatformPagedCollection<{{prefixedName}}>> getCollection({
+  Future<ApiPlatformPagedCollection<T>> getCollection<T extends {{prefixedName}}>({
     Map<String, dynamic> queryParameters,
     Options options,
     CancelToken cancelToken,
@@ -31,11 +31,11 @@ class {{prefixedName}}Service {
       if (resp.data is String) {
         resp.data = jsonDecode(resp.data);
       }
-      return ApiPlatformPagedCollection<{{prefixedName}}>.fromJson(resp.data);
+      return ApiPlatformPagedCollection<T>.fromJson(resp.data);
     });
   }
 
-  Future<{{prefixedName}}> getItem({
+  Future<T> getItem<T extends {{prefixedName}}>({
     String id,
     String iri,
     Map<String, dynamic> queryParameters,
@@ -55,12 +55,13 @@ class {{prefixedName}}Service {
       if (resp.data is String) {
         resp.data = jsonDecode(resp.data);
       }
-      return {{prefixedName}}.fromJson(resp.data);
+      return make<T>(resp.data);
     });
   }
 
-  Future<{{prefixedName}}> addItem({
+  Future<T> addItem<T extends {{prefixedName}}>({
     {{prefixedName}} data,
+    {{prefixedName}}SerializationOptions serializationOptions,
     Map<String, dynamic> queryParameters,
     Options options,
     CancelToken cancelToken,
@@ -75,7 +76,7 @@ class {{prefixedName}}Service {
     options.headers['Accept'] = 'application/ld+json';
     return client
         .post(buildIri(),
-            data: data.toJson(),
+            data: data.toJson(options),
             queryParameters: queryParameters,
             options: options,
             cancelToken: cancelToken,
@@ -85,14 +86,15 @@ class {{prefixedName}}Service {
       if (resp.data is String) {
         resp.data = jsonDecode(resp.data);
       }
-      return {{prefixedName}}.fromJson(resp.data);
+      return make<T>(resp.data);
     });
   }
 
-  Future<{{prefixedName}}> updateItem({
+  Future<T> updateItem<T extends {{prefixedName}}>({
     String id,
     String iri,
     {{prefixedName}} data,
+    {{prefixedName}}SerializationOptions serializationOptions,
     Map<String, dynamic> queryParameters,
     Options options,
     CancelToken cancelToken,
@@ -107,7 +109,7 @@ class {{prefixedName}}Service {
     options.headers['Accept'] = 'application/ld+json';
     return client
         .put(buildIri(id: id, iri: iri),
-            data: data.toJson(),
+            data: data.toJson(options),
             queryParameters: queryParameters,
             options: options,
             cancelToken: cancelToken,
@@ -117,7 +119,7 @@ class {{prefixedName}}Service {
       if (resp.data is String) {
         resp.data = jsonDecode(resp.data);
       }
-      return {{prefixedName}}.fromJson(resp.data);
+      return make<T>(resp.data);
     });
   }
 
