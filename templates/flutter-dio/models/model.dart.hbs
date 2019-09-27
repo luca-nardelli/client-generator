@@ -18,14 +18,10 @@ class {{name}} extends BaseModel {
 {{/each}}
 
 {{#each fields}}
-  var _{{name}}Dirty = false;
+  var _{{name}}Metadata = FieldMetadata();
 {{/each}}
 
-  {{name}}({iri{{#each fields}}, {{name}}{{/each~}} }) : super(iri: iri) {
-  {{#each fields}}
-    this.{{name}} = {{name}};
-  {{/each}}
-  }
+  {{name}}(): super();
 
   {{name}}.fromJson(Map<String, dynamic> json): super.fromJson(json) {
 {{#each fields}}
@@ -54,17 +50,17 @@ class {{name}} extends BaseModel {
     return null;
   }
 
-  toJson([Map<Type,Map<Type,SerializationOptions>> options = null]) {
+  toJson([Map<Type,Map<String,SerializationOptions>> options]) {
     final data = super.toJson();
 {{#each fields}}
   {{~#if reference}}
     {{~#if maxCardinality}}
-    nullSerializer<{{../name}},{{type}}>(data,'{{name}}',{{name}},{{name}}Dirty, options);
+    nullSerializer<{{../name}}>(data,'{{name}}',{{name}},{{name}}Metadata.dirty, options);
     {{~else}}
-    nullSerializer<{{../name}},{{type}}>(data,'{{name}}',{{name}},{{name}}Dirty, options);
+    nullSerializer<{{../name}}>(data,'{{name}}',{{name}},{{name}}Metadata.dirty, options);
     {{~/if}}
   {{~else}}
-    nullSerializer<{{../name}},{{type}}>(data,'{{name}}',{{name}},{{name}}Dirty);
+    nullSerializer<{{../name}}>(data,'{{name}}',{{name}},{{name}}Metadata.dirty);
   {{~/if}}
 
 {{/each}}
@@ -76,33 +72,19 @@ class {{name}} extends BaseModel {
   {{~#if reference}}
     {{~#if maxCardinality}}
   {{{type}}} get {{{name}}} { return _{{name}}; }
-  bool get {{{name}}}Dirty { return _{{name}}Dirty; }
-  set {{{name}}}({{{type}}} val) { _{{name}} = val; _{{name}}Dirty = true; }
+  FieldMetadata get {{{name}}}Metadata { return _{{name}}Metadata; }
+  set {{{name}}}({{{type}}} val) { _{{name}}Metadata.dirty = true; _{{name}} = val; }
     {{~else}}
   List<{{{type}}}> get {{{name}}} { return _{{name}}; }
-  bool get {{{name}}}Dirty { return _{{name}}Dirty; }
-  set {{{name}}}(List<{{{type}}}> val) { _{{name}} = val; _{{name}}Dirty = true; }
+  FieldMetadata get {{{name}}}Metadata { return _{{name}}Metadata; }
+  set {{{name}}}(List<{{{type}}}> val) { _{{name}}Metadata.dirty = true; _{{name}} = val; }
     {{~/if}}
   {{~else}}
   {{{type}}} get {{{name}}} { return _{{name}}; }
-  bool get {{{name}}}Dirty { return _{{name}}Dirty; }
-  set {{{name}}}({{{type}}} val) { _{{name}} = val; _{{name}}Dirty = true; }
+  FieldMetadata get {{{name}}}Metadata { return _{{name}}Metadata; }
+  set {{{name}}}({{{type}}} val) { _{{name}}Metadata.dirty = true; _{{name}} = val; }
   {{~/if}}
 
 {{/each}}
-
-}
-
-class {{name}}SerializationOptions {
-{{#each fields}}
-  {{~#if reference}}
-
-  {{type}}SerializationOptions {{{name}}};
-  {{~/if}}
-{{/each}}
-
-
-
-
 
 }

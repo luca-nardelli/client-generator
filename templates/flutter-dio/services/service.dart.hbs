@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 
 import '../models/{{resourceFile}}';
 import '../utils/api-platform.dart';
+import '../utils/maker.dart';
 
 class {{prefixedName}}Service {
   Dio client;
@@ -61,7 +62,7 @@ class {{prefixedName}}Service {
 
   Future<T> addItem<T extends {{prefixedName}}>({
     {{prefixedName}} data,
-    {{prefixedName}}SerializationOptions serializationOptions,
+    Map<Type,Map<String,SerializationOptions>> serializationOptions,
     Map<String, dynamic> queryParameters,
     Options options,
     CancelToken cancelToken,
@@ -76,7 +77,7 @@ class {{prefixedName}}Service {
     options.headers['Accept'] = 'application/ld+json';
     return client
         .post(buildIri(),
-            data: data.toJson(options),
+            data: data.toJson(serializationOptions),
             queryParameters: queryParameters,
             options: options,
             cancelToken: cancelToken,
@@ -94,7 +95,7 @@ class {{prefixedName}}Service {
     String id,
     String iri,
     {{prefixedName}} data,
-    {{prefixedName}}SerializationOptions serializationOptions,
+    Map<Type,Map<String,SerializationOptions>> serializationOptions,
     Map<String, dynamic> queryParameters,
     Options options,
     CancelToken cancelToken,
@@ -109,7 +110,7 @@ class {{prefixedName}}Service {
     options.headers['Accept'] = 'application/ld+json';
     return client
         .put(buildIri(id: id, iri: iri),
-            data: data.toJson(options),
+            data: data.toJson(serializationOptions),
             queryParameters: queryParameters,
             options: options,
             cancelToken: cancelToken,
