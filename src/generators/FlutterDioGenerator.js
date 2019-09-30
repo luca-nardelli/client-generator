@@ -2,19 +2,19 @@ import BaseGenerator from "./BaseGenerator";
 import pluralize from "pluralize";
 import Handlebars from "handlebars";
 
-Handlebars.registerHelper("toLowerCase", function(str) {
+Handlebars.registerHelper("toLowerCase", function (str) {
   return str.toLowerCase();
 });
 
-Handlebars.registerHelper("pluralize", function(str) {
+Handlebars.registerHelper("pluralize", function (str) {
   return pluralize(str);
 });
 
-Handlebars.registerHelper("camelCaseToKebabCase", function(str) {
+Handlebars.registerHelper("camelCaseToKebabCase", function (str) {
   return camelCaseToKebabCase(str);
 });
 
-Handlebars.registerHelper("camelCaseToSnakeCase", function(str) {
+Handlebars.registerHelper("camelCaseToSnakeCase", function (str) {
   return camelCaseToSnakeCase(str);
 });
 
@@ -50,14 +50,22 @@ export default class FlutterDioGenerator extends BaseGenerator {
       },
       false
     );
-    const resources = this.processedResources.map(res => this.parseFields(res));
     const importsMap = new Map();
+
+    const resources = this.processedResources.map(res => this.parseFields(res));
+    for (const res of this.processedResources) {
+      importsMap.set(res.prefixedTitle, {
+        type: res.prefixedTitle,
+        file: camelCaseToKebabCase(res.prefixedTitle) + ".dart"
+      });
+    }
     for (const res of resources) {
       for (const importedRes of res.imports) {
         importsMap.set(importedRes.type, importedRes);
       }
     }
     const imports = [...importsMap.values()];
+
     this.createFile(
       "utils/maker.dart.hbs",
       `${dest}/maker.dart`,
@@ -75,7 +83,7 @@ export default class FlutterDioGenerator extends BaseGenerator {
   generate(api, resource, dir) {
     this.processedResources.push(resource);
 
-    const { fields, imports } = this.parseFields(resource);
+    const {fields, imports} = this.parseFields(resource);
 
     let dest = `${dir}/models`;
     this.createDir(dest, false);
@@ -193,7 +201,7 @@ export default class FlutterDioGenerator extends BaseGenerator {
 
     const importsArray = Object.keys(imports).map(e => imports[e]);
 
-    return { fields: fieldsArray, imports: importsArray };
+    return {fields: fieldsArray, imports: importsArray};
   }
 }
 
