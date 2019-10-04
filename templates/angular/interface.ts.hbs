@@ -7,6 +7,6 @@ import { {{type}} } from '{{file}}';
 export interface {{{name}}} {
   '@id'?: string;
 {{#each fields}}
- {{#if readonly}} readonly{{/if}} {{{name}}}{{#if notrequired}}?{{/if}}: {{{type}}};
+ {{{name}}}{{#if notrequired}}?{{/if}}: {{{type}}};
 {{/each}}
 }

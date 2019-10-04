@@ -26,7 +26,7 @@ program
   .option("--username [username]", "Username for basic auth (Hydra only)")
   .option("--password [password]", "Password for basic auth (Hydra only)")
   .option(
-    "--resource-prefix [serverPath]",
+    "--resource-prefix [resourcePrefix]",
     "Prefix to append for generated resources (useful to avoid naming conflicts)"
   )
   .option(
