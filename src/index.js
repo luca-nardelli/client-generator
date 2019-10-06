@@ -29,6 +29,8 @@ program
     "--resource-prefix [resourcePrefix]",
     "Prefix to append for generated resources (useful to avoid naming conflicts)"
   )
+  .option("--username [username]", "Username for basic auth (Hydra only)")
+  .option("--password [password]", "Password for basic auth (Hydra only)")
   .option(
     "-g, --generator [generator]",
     'The generator to use, one of "react", "react-native", "vue", "admin-on-rest", "typescript", "next", "angular", "vue-plugin-axios", "flutter-dio"',
