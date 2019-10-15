@@ -11,20 +11,20 @@ export class {{name}}Service {
   ) {
   }
 
-  getCollection(config?: AxiosRequestConfig) {
-    return this.http.get<ApiPlatformPagedCollection<{{name}}>>(`/api/${ {{~name~}}Service.RESOURCE_NAME}`,config);
+  getCollection<T = {{name}}>(config?: AxiosRequestConfig) {
+    return this.http.get<ApiPlatformPagedCollection<T>>(`/api/${ {{~name~}}Service.RESOURCE_NAME}`,config);
   }
 
-  addItem(item: {{name}}) {
-    return this.http.post<{{name}}>(`/api/${ {{~name~}}Service.RESOURCE_NAME}`, item);
+  addItem<T = {{name}}>(item: {{name}}) {
+    return this.http.post<T>(`/api/${ {{~name~}}Service.RESOURCE_NAME}`, item);
   }
 
-  getItem(id: ApiPlatformIdentifier,config?: AxiosRequestConfig) {
-    return this.http.get<{{name}}>(`${ {{~name~}}Service.buildIri(id)}`,config);
+  getItem<T = {{name}}>(id: ApiPlatformIdentifier,config?: AxiosRequestConfig) {
+    return this.http.get<T>(`${ {{~name~}}Service.buildIri(id)}`,config);
   }
 
-  updateItem(item: {{name}}) {
-    return this.http.put<{{name}}>(`${ {{~name~}}Service.buildIri(item)}`, item);
+  updateItem<T = {{name}}>(item: {{name}}) {
+    return this.http.put<T>(`${ {{~name~}}Service.buildIri(item)}`, item);
   }
 
   deleteItem(id: ApiPlatformIdentifier) {

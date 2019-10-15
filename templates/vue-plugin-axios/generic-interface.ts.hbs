@@ -1,6 +1,8 @@
 export interface {{{name}}}<{{#each generics}}{{name}},{{/each}}> {
 '@id'?: string;
 {{#each fields}}
-  {{#if readonly}} readonly{{/if}} {{{name}}}{{#if notrequired}}?{{/if}}: {{#if reference}}{{#if maxCardinality}}{{reference.title}}{{else}}{{reference.title}}[]{{/if}}{{else}}{{{type}}}{{/if}};
+{{!--{{#if readonly}} readonly{{/if}} {{{name}}}{{#if notrequired}}?{{/if}}: {{#if reference}}{{#if maxCardinality}}{{reference.title}}{{else}}{{reference.title}}[]{{/if}}{{else}}{{{type}}}{{/if}};--}}
+  {{{name}}}{{#if notrequired}}?{{/if}}: {{#if reference}}{{#if
+          maxCardinality}}{{reference.title}}{{else}}{{reference.title}}[]{{/if}}{{else}}{{{type}}}{{/if}};
 {{/each}}
 }
