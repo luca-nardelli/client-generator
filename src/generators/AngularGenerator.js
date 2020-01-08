@@ -24,7 +24,6 @@ export default class AngularGenerator extends BaseGenerator {
 
     this.registerTemplates(`angular/`, [
       "interface.ts.hbs",
-      "generic-interface.ts.hbs",
       "foo.service.ts.hbs",
       "utils.ts.hbs"
     ]);
@@ -48,30 +47,32 @@ export default class AngularGenerator extends BaseGenerator {
       {
         fields: fields,
         imports: imports,
-        name: resource.title
+        title: resource.title,
+        name: resource.name
       }
     );
 
-    let generics = {};
-    for (const f of fields) {
-      if (f.reference) {
-        generics[f.reference.title] = { name: f.reference.title };
-      }
-    }
-    generics = Object.keys(generics).map(e => generics[e]);
-
-    dest = `${dir}/interfaces/generic`;
-    this.createDir(dest, false);
-    this.createFile(
-      "generic-interface.ts.hbs",
-      `${dest}/${camelCaseToKebabCase(resource.title)}.ts`,
-      {
-        fields,
-        imports,
-        generics,
-        name: resource.title
-      }
-    );
+    // let generics = {};
+    // for (const f of fields) {
+    //   if (f.reference) {
+    //     generics[f.reference.title] = { name: f.reference.title };
+    //   }
+    // }
+    // generics = Object.keys(generics).map(e => generics[e]);
+    //
+    // dest = `${dir}/interfaces/generic`;
+    // this.createDir(dest, false);
+    // this.createFile(
+    //   "generic-interface.ts.hbs",
+    //   `${dest}/${camelCaseToKebabCase(resource.title)}.ts`,
+    //   {
+    //     fields,
+    //     imports,
+    //     generics,
+    //     title: resource.title,
+    //     name: resource.name,
+    //   }
+    // );
 
     dest = `${dir}/services`;
     this.createDir(dest, false);
@@ -81,7 +82,8 @@ export default class AngularGenerator extends BaseGenerator {
       {
         fields,
         imports,
-        name: resource.title,
+        title: resource.title,
+        name: resource.name,
         resourceFile: "../interfaces/" + camelCaseToKebabCase(resource.title)
       }
     );

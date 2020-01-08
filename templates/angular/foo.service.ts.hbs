@@ -1,12 +1,12 @@
-import { {{~name~}} } from '{{resourceFile}}';
+import { {{~title~}} } from '{{resourceFile}}';
 import {HttpClient} from '@angular/common/http';
 import {ApiPlatformPagedCollection, ApiPlatformIdentifier, HttpClientGetOptions} from '../utils/utils';
 import {Inject, Injectable} from '@angular/core';
 
 @Injectable()
-export class {{name}}Service {
+export class {{title}}Service {
 
-  readonly RESOURCE_NAME = '{{pluralize (toLowerCase (camelCaseToSnakeCase name))}}';
+  readonly RESOURCE_NAME = '{{name}}';
 
   constructor(
     protected http: HttpClient,
@@ -14,19 +14,19 @@ export class {{name}}Service {
   ) {
   }
 
-  getCollection<T = {{name}}>(options?: HttpClientGetOptions) {
+  getCollection<T = {{title}}>(options?: HttpClientGetOptions) {
     return this.http.get<ApiPlatformPagedCollection<T>>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`, options);
   }
 
-  addItem<T = {{name}}>(item: T) {
+  addItem<T = {{title}}>(item: T) {
     return this.http.post<T>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`, item);
   }
 
-  getItem<T = {{name}}>(id: ApiPlatformIdentifier, options?: HttpClientGetOptions) {
+  getItem<T = {{title}}>(id: ApiPlatformIdentifier, options?: HttpClientGetOptions) {
     return this.http.get<T>(`${this.baseUrl}${this.buildIri(id)}`, options);
   }
 
-  updateItem<T = {{name}}>(item: T) {
+  updateItem<T = {{title}}>(item: T) {
     return this.http.put<T>(`${this.baseUrl}${this.buildIri(item)}`, item);
   }
 
