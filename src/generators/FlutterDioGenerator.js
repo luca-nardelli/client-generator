@@ -1,4 +1,5 @@
 import BaseGenerator from "./BaseGenerator";
+import { camelCaseToKebabCase } from "../utils/string";
 
 export default class FlutterDioGenerator extends BaseGenerator {
   processedResources = [];
@@ -185,12 +186,4 @@ export default class FlutterDioGenerator extends BaseGenerator {
 
     return { fields: fieldsArray, imports: importsArray };
   }
-}
-
-function camelCaseToKebabCase(val) {
-  return val.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
-}
-
-function camelCaseToSnakeCase(val) {
-  return val.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase();
 }

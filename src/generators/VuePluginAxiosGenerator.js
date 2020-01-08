@@ -1,4 +1,5 @@
 import BaseGenerator from "./BaseGenerator";
+import { camelCaseToKebabCase } from "../utils/string";
 
 export default class VuePluginAxiosGenerator extends BaseGenerator {
   constructor(params) {
@@ -184,12 +185,4 @@ export default class VuePluginAxiosGenerator extends BaseGenerator {
         : this.getType(field);
     }
   }
-}
-
-function camelCaseToKebabCase(val) {
-  return val.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
-}
-
-function camelCaseToSnakeCase(val) {
-  return val.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase();
 }
