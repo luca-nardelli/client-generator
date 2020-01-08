@@ -1,22 +1,4 @@
 import BaseGenerator from "./BaseGenerator";
-import pluralize from "pluralize";
-import Handlebars from "handlebars";
-
-Handlebars.registerHelper("toLowerCase", function(str) {
-  return str.toLowerCase();
-});
-
-Handlebars.registerHelper("pluralize", function(str) {
-  return pluralize(str);
-});
-
-Handlebars.registerHelper("camelCaseToKebabCase", function(str) {
-  return camelCaseToKebabCase(str);
-});
-
-Handlebars.registerHelper("camelCaseToSnakeCase", function(str) {
-  return camelCaseToSnakeCase(str);
-});
 
 export default class AngularGenerator extends BaseGenerator {
   constructor(params) {

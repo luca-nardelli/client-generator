@@ -4,7 +4,7 @@ import '../utils/api-platform.dart';
 import '{{file}}';
 {{/each}}
 
-class {{name}} extends BaseModel {
+class {{title}} extends BaseModel {
 {{#each fields}}
   {{~#if reference}}
     {{~#if maxCardinality}}
@@ -21,9 +21,9 @@ class {{name}} extends BaseModel {
   var _{{name}}Metadata = FieldMetadata();
 {{/each}}
 
-  {{name}}(): super();
+  {{title}}(): super();
 
-  {{name}}.fromJson(Map<String, dynamic> json): super.fromJson(json) {
+  {{title}}.fromJson(Map<String, dynamic> json): super.fromJson(json) {
 {{#each fields}}
     if (json.containsKey('{{name}}')){
 {{~#if reference}}
@@ -39,13 +39,13 @@ class {{name}} extends BaseModel {
 {{/each}}
   }
 
-  {{name}}.fromIri(String iri) : super.fromIri(iri);
+  {{title}}.fromIri(String iri) : super.fromIri(iri);
 
-  factory {{name}}.fromJsonOrIri(dynamic jsonOrIri) {
+  factory {{title}}.fromJsonOrIri(dynamic jsonOrIri) {
     if (jsonOrIri is String) {
-      return {{name}}.fromIri(jsonOrIri);
+      return {{title}}.fromIri(jsonOrIri);
     } else if (jsonOrIri is Map) {
-      return {{name}}.fromJson(jsonOrIri);
+      return {{title}}.fromJson(jsonOrIri);
     }
     return null;
   }

@@ -7,14 +7,14 @@ import '../models/{{resourceFile}}';
 import '../utils/api-platform.dart';
 import '../utils/maker.dart';
 
-class {{prefixedName}}Service {
+class {{title}}Service {
   Dio client;
 
-  static const RESOURCE_NAME = '{{pluralize (toLowerCase (camelCaseToSnakeCase name))}}';
+  static const RESOURCE_NAME = '{{name}}';
 
-  {{prefixedName}}Service(this.client);
+  {{title}}Service(this.client);
 
-  Future<ApiPlatformPagedCollection<T>> getCollection<T extends {{prefixedName}}>({
+  Future<ApiPlatformPagedCollection<T>> getCollection<T extends {{title}}>({
     Map<String, dynamic> queryParameters,
     Options options,
     CancelToken cancelToken,
@@ -36,7 +36,7 @@ class {{prefixedName}}Service {
     });
   }
 
-  Future<T> getItem<T extends {{prefixedName}}>({
+  Future<T> getItem<T extends {{title}}>({
     String id,
     String iri,
     Map<String, dynamic> queryParameters,
@@ -60,8 +60,8 @@ class {{prefixedName}}Service {
     });
   }
 
-  Future<T> addItem<T extends {{prefixedName}}>({
-    {{prefixedName}} data,
+  Future<T> addItem<T extends {{title}}>({
+    {{title}} data,
     Map<Type,Map<String,SerializationOptions>> serializationOptions,
     Map<String, dynamic> queryParameters,
     Options options,
@@ -91,10 +91,10 @@ class {{prefixedName}}Service {
     });
   }
 
-  Future<T> updateItem<T extends {{prefixedName}}>({
+  Future<T> updateItem<T extends {{title}}>({
     String id,
     String iri,
-    {{prefixedName}} data,
+    {{title}} data,
     Map<Type,Map<String,SerializationOptions>> serializationOptions,
     Map<String, dynamic> queryParameters,
     Options options,
