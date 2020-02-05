@@ -55,12 +55,12 @@ class {{title}} extends BaseModel {
 {{#each fields}}
   {{~#if reference}}
     {{~#if maxCardinality}}
-    nullSerializer<{{../name}}>(data,'{{name}}',{{name}},{{name}}Metadata.dirty, options);
+    nullSerializer<{{../title}}>(data,'{{name}}',{{name}},{{name}}Metadata.dirty, options);
     {{~else}}
-    nullSerializer<{{../name}}>(data,'{{name}}',{{name}},{{name}}Metadata.dirty, options);
+    nullSerializer<{{../title}}>(data,'{{name}}',{{name}},{{name}}Metadata.dirty, options);
     {{~/if}}
   {{~else}}
-    nullSerializer<{{../name}}>(data,'{{name}}',{{name}},{{name}}Metadata.dirty);
+    nullSerializer<{{../title}}>(data,'{{name}}',{{name}},{{name}}Metadata.dirty);
   {{~/if}}
 
 {{/each}}
