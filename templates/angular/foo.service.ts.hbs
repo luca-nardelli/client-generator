@@ -30,8 +30,8 @@ export class {{title}}Service {
     return this.http.put<T>(`${this.baseUrl}${this.buildIri(item)}`, item);
   }
 
-  deleteItem(id: ApiPlatformIdentifier) {
-    return this.http.delete<{}>(`${this.baseUrl}${this.buildIri(id)}`);
+  deleteItem(id: ApiPlatformIdentifier, options?: HttpClientGetOptions) {
+    return this.http.delete<{}>(`${this.baseUrl}${this.buildIri(id)}`, options);
   }
 
   buildIri(id?: ApiPlatformIdentifier): string {
