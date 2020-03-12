@@ -30,7 +30,7 @@ export interface ApiPlatformIdentifier {
 }
 
 
-export interface HttpClientGetOptions {
+export interface HttpClientOptions {
   headers?: HttpHeaders | {
     [header: string]: string | string[];
   };
@@ -42,3 +42,8 @@ export interface HttpClientGetOptions {
   responseType?: 'json';
   withCredentials?: boolean;
 }
+
+/**
+ * @deprecated
+ */
+export type HttpClientGetOptions = HttpClientOptions;

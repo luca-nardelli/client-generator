@@ -1,6 +1,6 @@
 import { {{~title~}} } from '{{resourceFile}}';
 import {HttpClient} from '@angular/common/http';
-import {ApiPlatformPagedCollection, ApiPlatformIdentifier, HttpClientGetOptions} from '../utils/utils';
+import {ApiPlatformPagedCollection, ApiPlatformIdentifier, HttpClientOptions} from '../utils/utils';
 import {Inject, Injectable} from '@angular/core';
 
 @Injectable()
@@ -14,23 +14,23 @@ export class {{title}}Service {
   ) {
   }
 
-  getCollection<T = {{title}}>(options?: HttpClientGetOptions) {
+  getCollection<T = {{title}}>(options?: HttpClientOptions) {
     return this.http.get<ApiPlatformPagedCollection<T>>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`, options);
   }
 
-  addItem<T = {{title}}>(item: T) {
-    return this.http.post<T>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`, item);
+  addItem<T = {{title}}>(item: T, options?: HttpClientOptions) {
+    return this.http.post<T>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`, item, options);
   }
 
-  getItem<T = {{title}}>(id: ApiPlatformIdentifier, options?: HttpClientGetOptions) {
+  getItem<T = {{title}}>(id: ApiPlatformIdentifier, options?: HttpClientOptions) {
     return this.http.get<T>(`${this.baseUrl}${this.buildIri(id)}`, options);
   }
 
-  updateItem<T = {{title}}>(item: T) {
-    return this.http.put<T>(`${this.baseUrl}${this.buildIri(item)}`, item);
+  updateItem<T = {{title}}>(item: T, options?: HttpClientOptions) {
+    return this.http.put<T>(`${this.baseUrl}${this.buildIri(item)}`, item, options);
   }
 
-  deleteItem(id: ApiPlatformIdentifier, options?: HttpClientGetOptions) {
+  deleteItem(id: ApiPlatformIdentifier, options?: HttpClientOptions) {
     return this.http.delete<{}>(`${this.baseUrl}${this.buildIri(id)}`, options);
   }
 
