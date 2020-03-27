@@ -7,6 +7,7 @@ import parseSwaggerDocumentation from "@api-platform/api-doc-parser/lib/swagger/
 import parseOpenApi3Documentation from "@api-platform/api-doc-parser/lib/openapi3/parseOpenApi3Documentation";
 import { version } from "../package.json";
 import generators from "./generators";
+import fs from "fs";
 
 program
   .version(version)
@@ -28,6 +29,14 @@ program
   .option(
     "--resource-prefix [resourcePrefix]",
     "Prefix to append for generated resources (useful to avoid naming conflicts)"
+  )
+  .option(
+    "--dump-schema [schemaFile]",
+    "Dump API resources to schema file schemaFile"
+  )
+  .option(
+    "--patch-schema [schemaFile]",
+    "Patches the API resource schema using the provided schemaFile"
   )
   .option("--username [username]", "Username for basic auth (Hydra only)")
   .option("--password [password]", "Password for basic auth (Hydra only)")
@@ -96,45 +105,127 @@ const parser = entrypointWithSlash => {
 // check generator dependencies
 generator.checkDependencies(outputDirectory, serverPath);
 
-parser(entrypointWithSlash)
-  .then(ret => {
-    ret.api.resources
-      .filter(({ deprecated }) => !deprecated)
-      .filter(resource => {
-        const nameLc = resource.name.toLowerCase();
-        const titleLc = resource.title.toLowerCase();
-
-        return (
-          null === resourceToGenerate ||
-          nameLc === resourceToGenerate ||
-          titleLc === resourceToGenerate
-        );
-      })
-      .map(resource => {
-        if (program.resourcePrefix) {
-          resource.prefixedTitle = `${program.resourcePrefix}${resource.title}`;
-        } else {
-          resource.prefixedTitle = resource.title;
-        }
-        return resource;
-      })
-      .map(resource => {
-        const filterDeprecated = list =>
-          list.filter(({ deprecated }) => !deprecated);
-
-        resource.fields = filterDeprecated(resource.fields);
-        resource.readableFields = filterDeprecated(resource.readableFields);
-        resource.writableFields = filterDeprecated(resource.writableFields);
-
-        generator.generate(ret.api, resource, outputDirectory, serverPath);
-
-        return resource;
-      })
-      // display helps after all resources have been generated to check relation dependency for example
-      .forEach(resource => generator.help(resource, outputDirectory));
-    // Invoke the finalize function for the generator
-    generator.finalize(outputDirectory);
-  })
-  .catch(e => {
-    console.log(e);
+if (program.dumpSchema) {
+  parser(entrypointWithSlash).then(ret => {
+    console.log(`Dumped schema file to ${program.dumpSchema}`);
+    fs.writeFileSync(
+      program.dumpSchema,
+      JSON.stringify(ret.api.resources, null, 2)
+    );
   });
+} else {
+  parser(entrypointWithSlash)
+    .then(ret => {
+      if (program.patchSchema) {
+        console.log(`Reading patch schema ${program.patchSchema}`);
+        const patchData = JSON.parse(fs.readFileSync(program.patchSchema));
+        const patchMap = {};
+        if (patchData.resources && program.format === "hydra") {
+          for (const resource of patchData.resources) {
+            const resourceData = {};
+            const resourceFullId = `${entrypointWithSlash}docs.jsonld#${resource.id}`;
+            if (!resource.id.startsWith("http")) {
+              resource.id = resourceFullId;
+            }
+            if (resource.newFields) {
+              const fieldData = {};
+              for (const field of resource.newFields) {
+                field.name = field.name || field.id;
+                if (!field.id.startsWith("http")) {
+                  field.id = `${resourceFullId}/${field.id}`;
+                }
+                if (field.reference && !field.reference.startsWith("http")) {
+                  field.reference = `${entrypointWithSlash}docs.jsonld#${field.reference}`;
+                }
+                field.readable =
+                  "readable" in fieldData ? fieldData.readable : true;
+                field.writable =
+                  "writable" in fieldData ? fieldData.writable : true;
+                fieldData[field.id] = field;
+              }
+              resourceData.newFields = fieldData;
+            }
+            patchMap[resourceFullId] = resourceData;
+          }
+        }
+        for (const origResource of ret.api.resources) {
+          const origId = origResource.id;
+          if (origId in patchMap) {
+            const resourceData = patchMap[origId];
+            console.log(`Patching ${origResource.title}`);
+            if ("newFields" in resourceData) {
+              for (const fieldData of Object.values(resourceData.newFields)) {
+                const fieldElement = {
+                  name: fieldData.name,
+                  id: fieldData.id,
+                  range: fieldData.range || "",
+                  reference: fieldData.reference || null,
+                  required: fieldData.required || null,
+                  description: fieldData.description || "",
+                  maxCardinality: fieldData.maxCardinality || "",
+                  deprecated: fieldData.deprecated || false
+                };
+                origResource.fields.push(fieldElement);
+                if (fieldData.readable) {
+                  origResource.readableFields.push(fieldElement);
+                }
+                if (fieldData.writable) {
+                  origResource.readableFields.push(fieldElement);
+                }
+                if (fieldElement.reference) {
+                  const refId = fieldElement.reference;
+                  fieldElement.reference = ret.api.resources.find(
+                    o => o.id === refId
+                  );
+                  if (!fieldElement.reference) {
+                    console.error(`Error while looking for reference ${refId}`);
+                  }
+                }
+                // console.log("Added field", fieldElement);
+              }
+            }
+          }
+        }
+      }
+
+      ret.api.resources
+        .filter(({ deprecated }) => !deprecated)
+        .filter(resource => {
+          const nameLc = resource.name.toLowerCase();
+          const titleLc = resource.title.toLowerCase();
+
+          return (
+            null === resourceToGenerate ||
+            nameLc === resourceToGenerate ||
+            titleLc === resourceToGenerate
+          );
+        })
+        .map(resource => {
+          if (program.resourcePrefix) {
+            resource.prefixedTitle = `${program.resourcePrefix}${resource.title}`;
+          } else {
+            resource.prefixedTitle = resource.title;
+          }
+          return resource;
+        })
+        .map(resource => {
+          const filterDeprecated = list =>
+            list.filter(({ deprecated }) => !deprecated);
+
+          resource.fields = filterDeprecated(resource.fields);
+          resource.readableFields = filterDeprecated(resource.readableFields);
+          resource.writableFields = filterDeprecated(resource.writableFields);
+
+          generator.generate(ret.api, resource, outputDirectory, serverPath);
+
+          return resource;
+        })
+        // display helps after all resources have been generated to check relation dependency for example
+        .forEach(resource => generator.help(resource, outputDirectory));
+      // Invoke the finalize function for the generator
+      generator.finalize(outputDirectory);
+    })
+    .catch(e => {
+      console.log(e);
+    });
+}

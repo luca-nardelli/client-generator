@@ -7,6 +7,7 @@ import VueGenerator from "./generators/VueGenerator";
 import VuetifyGenerator from "./generators/VuetifyGenerator";
 import QuasarGenerator from "./generators/QuasarGenerator";
 import AngularGenerator from "./generators/AngularGenerator";
+import AngularV2Generator from "./generators/AngularV2Generator";
 import VuePluginAxiosGenerator from "./generators/VuePluginAxiosGenerator";
 import FlutterDioGenerator from "./generators/FlutterDioGenerator";
 
@@ -35,6 +36,8 @@ export default function generators(generator = "react") {
       return wrap(QuasarGenerator);
     case "angular":
       return wrap(AngularGenerator);
+    case "angular-v2":
+      return wrap(AngularV2Generator);
     case "vue-plugin-axios":
       return wrap(VuePluginAxiosGenerator);
     case "flutter-dio":

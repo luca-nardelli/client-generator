@@ -1,0 +1,24 @@
+import { {{~title~}} } from '../interfaces/{{resourceFile}}';
+import {Raw{{~title~}} } from '../raw-interfaces/{{resourceFile}}';
+import {Inject, Injectable} from '@angular/core';
+import {BaseResourceService} from '../utils/base-resource.service';
+import {HttpClient} from '@angular/common/http';
+import {deserializeRaw{{title~}} } from '../utils/deserialize';
+
+@Injectable()
+export class {{title}}Service extends BaseResourceService<{{title}}, Raw{{title}}> {
+
+  static readonly RESOURCE_NAME = '{{name}}';
+
+  constructor(
+    protected http: HttpClient,
+    @Inject('BASE_API_URL') protected baseUrl: string
+  ) {
+    super(http, baseUrl, {{title}}Service.RESOURCE_NAME);
+  }
+
+  deserialize(data: Raw{{title}}): {{title}} {
+    return deserializeRaw{{title}}(data);
+  }
+
+}
