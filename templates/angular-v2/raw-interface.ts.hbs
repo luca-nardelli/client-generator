@@ -5,7 +5,7 @@ import { {{type}} } from '{{file}}';
 
 {{/if}}
 export interface {{{title}}} {
-  '@id': string;
+  '@id'?: string;
 {{#each fields}}
   {{{name}}}{{#if notrequired}}?{{/if}}: {{{type}}};
 {{/each}}

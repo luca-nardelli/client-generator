@@ -43,10 +43,10 @@ export interface HttpClientOptions {
 }
 
 export interface BaseResource {
-  readonly _shallow: boolean;
-  '@id': string;
+  readonly _shallow?: boolean;
+  '@id'?: string;
 }
 
 export interface BaseRawResource {
-  '@id': string;
+  '@id'?: string;
 }
