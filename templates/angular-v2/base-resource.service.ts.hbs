@@ -13,41 +13,41 @@ export abstract class BaseResourceService<T extends BaseResource, U extends Base
   }
 
 
-  getCollectionRaw(options?: HttpClientOptions) {
-    return this.http.get<ApiPlatformPagedCollection<U>>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`, options);
+  getCollectionRaw<K = U>(options?: HttpClientOptions) {
+    return this.http.get<ApiPlatformPagedCollection<K>>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`, options);
   }
 
-  getCollection(options?: HttpClientOptions) {
+  getCollection<K = T>(options?: HttpClientOptions) {
     return this.getCollectionRaw(options)
       .pipe(map(value => {
         value['hydra:member'] = value['hydra:member'].map(value1 => this.deserialize(value1)) as any;
-        return value as unknown as ApiPlatformPagedCollection<T>;
+        return value as unknown as ApiPlatformPagedCollection<K>;
       }));
   }
 
-  addItemRaw(item: U, options?: HttpClientOptions) {
-    return this.http.post<U>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`, item, options);
+  addItemRaw<K = U>(item: U, options?: HttpClientOptions) {
+    return this.http.post<K>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`, item, options);
   }
 
-  addItem(item: U, options?: HttpClientOptions) {
+  addItem<K = T>(item: U, options?: HttpClientOptions) {
     return this.addItemRaw(item, options)
-      .pipe(map(value => this.deserialize(value)));
+      .pipe(map(value => this.deserialize(value) as unknown as K));
   }
 
-  getItemRaw(id: ApiPlatformIdentifier, options?: HttpClientOptions) {
-    return this.http.get<U>(`${this.baseUrl}${this.buildIri(id)}`, options);
+  getItemRaw<K = U>(id: ApiPlatformIdentifier, options?: HttpClientOptions) {
+    return this.http.get<K>(`${this.baseUrl}${this.buildIri(id)}`, options);
   }
 
-  getItem(id: ApiPlatformIdentifier, options?: HttpClientOptions) {
-    return this.getItemRaw(id, options).pipe(map(value => this.deserialize(value)));
+  getItem<K = T>(id: ApiPlatformIdentifier, options?: HttpClientOptions) {
+    return this.getItemRaw(id, options).pipe(map(value => this.deserialize(value) as unknown as K));
   }
 
-  updateItemRaw(item: U, options?: HttpClientOptions) {
-    return this.http.put<U>(`${this.baseUrl}${this.buildIri(item)}`, item, options);
+  updateItemRaw<K = U>(item: U, options?: HttpClientOptions) {
+    return this.http.put<K>(`${this.baseUrl}${this.buildIri(item)}`, item, options);
   }
 
-  updateItem(item: U, options?: HttpClientOptions) {
-    return this.updateItemRaw(item, options).pipe(map(value => this.deserialize(value)));
+  updateItem<K = T>(item: U, options?: HttpClientOptions) {
+    return this.updateItemRaw(item, options).pipe(map(value => this.deserialize(value) as unknown as K));
   }
 
   deleteItem(id: ApiPlatformIdentifier, options?: HttpClientOptions) {

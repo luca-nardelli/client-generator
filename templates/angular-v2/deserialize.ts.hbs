@@ -27,7 +27,7 @@ export function deserializeRaw{{title}}(data: Raw{{title}} | string): {{title}} 
     '@id': data['@id'],
 {{#each fields}}
     {{{name}}}: {{#if reference~}}
-      {{~#if isMultiple~}}(data.{{name}} as any).map(deserializeRaw{{reference.title}}){{~else~}}deserializeRaw{{reference.title}}(data.{{name}}){{~/if~}}
+      {{~#if isMultiple~}}safeMap(data.{{name}}, deserializeRaw{{reference.title}}){{~else~}}deserializeRaw{{reference.title}}(data.{{name}}){{~/if~}}
       {{~else if isDate~}}safeParseDate(data.{{name}}) {{~else~}} data.{{name}}
     {{~/if~}},
 {{/each}}
@@ -35,3 +35,10 @@ export function deserializeRaw{{title}}(data: Raw{{title}} | string): {{title}} 
 }
 
 {{/each}}
+
+function safeMap<T, U>(list: T[], callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any) {
+  if (list) {
+    return list.map(callbackfn, thisArg);
+  }
+  return [];
+}
