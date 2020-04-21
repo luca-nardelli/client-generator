@@ -2,13 +2,17 @@ import {HttpClient} from '@angular/common/http';
 import {ApiPlatformIdentifier, ApiPlatformPagedCollection, BaseRawResource, BaseResource, HttpClientOptions} from './utils';
 import {parseISO} from 'date-fns';
 import {map} from 'rxjs/operators';
+import {SerializerService} from '../serializer/serializer.service';
+import {NormalizeOpts} from '../serializer/serializer';
 
 export abstract class BaseResourceService<T extends BaseResource, U extends BaseRawResource> {
 
   protected constructor(
     protected http: HttpClient,
     protected baseUrl: string,
+    protected serializer: SerializerService,
     public readonly RESOURCE_NAME: string,
+    public readonly RESOURCE_TYPE: string,
   ) {
   }
 
@@ -20,7 +24,7 @@ export abstract class BaseResourceService<T extends BaseResource, U extends Base
   getCollection<K = T>(options?: HttpClientOptions) {
     return this.getCollectionRaw(options)
       .pipe(map(value => {
-        value['hydra:member'] = value['hydra:member'].map(value1 => this.deserialize(value1)) as any;
+        value['hydra:member'] = value['hydra:member'].map(value1 => this.serializer.denormalize(value1,this.RESOURCE_TYPE)) as any;
         return value as unknown as ApiPlatformPagedCollection<K>;
       }));
   }
@@ -29,9 +33,15 @@ export abstract class BaseResourceService<T extends BaseResource, U extends Base
     return this.http.post<K>(`${this.baseUrl}/api/${this.RESOURCE_NAME}`, item, options);
   }
 
-  addItem<K = T>(item: U, options?: HttpClientOptions) {
+  addRawItem(item: U, options?: HttpClientOptions) {
     return this.addItemRaw(item, options)
-      .pipe(map(value => this.deserialize(value) as unknown as K));
+      .pipe(map(value => this.serializer.denormalize(value,this.RESOURCE_TYPE) as unknown as T));
+  }
+
+  addItem(item: T, normalizeOpts?: NormalizeOpts, options?: HttpClientOptions) {
+    const normalized = this.serializer.normalize(item,this.RESOURCE_TYPE,normalizeOpts);
+    return this.addItemRaw(normalized, options)
+      .pipe(map(value => this.serializer.denormalize(value,this.RESOURCE_TYPE) as unknown as T));
   }
 
   getItemRaw<K = U>(id: ApiPlatformIdentifier, options?: HttpClientOptions) {
@@ -39,15 +49,22 @@ export abstract class BaseResourceService<T extends BaseResource, U extends Base
   }
 
   getItem<K = T>(id: ApiPlatformIdentifier, options?: HttpClientOptions) {
-    return this.getItemRaw(id, options).pipe(map(value => this.deserialize(value) as unknown as K));
+    return this.getItemRaw(id, options).pipe(map(value => this.serializer.denormalize(value,this.RESOURCE_TYPE) as unknown as K));
   }
 
   updateItemRaw<K = U>(item: U, options?: HttpClientOptions) {
     return this.http.put<K>(`${this.baseUrl}${this.buildIri(item)}`, item, options);
   }
 
-  updateItem<K = T>(item: U, options?: HttpClientOptions) {
-    return this.updateItemRaw(item, options).pipe(map(value => this.deserialize(value) as unknown as K));
+  updateRawItem(item: U, options?: HttpClientOptions) {
+    return this.updateItemRaw(item, options)
+      .pipe(map(value => this.serializer.denormalize(value,this.RESOURCE_TYPE) as unknown as T));
+  }
+
+  updateItem(item: T, normalizeOpts?: NormalizeOpts, options?: HttpClientOptions) {
+    const normalized = this.serializer.normalize(item,this.RESOURCE_TYPE,normalizeOpts);
+    return this.updateItemRaw(normalized, options)
+      .pipe(map(value => this.serializer.denormalize(value,this.RESOURCE_TYPE) as unknown as T));
   }
 
   deleteItem(id: ApiPlatformIdentifier, options?: HttpClientOptions) {
@@ -63,29 +80,4 @@ export abstract class BaseResourceService<T extends BaseResource, U extends Base
       return `/api/${this.RESOURCE_NAME}`;
     }
   }
-
-  parseDate(date: string) {
-    return date ? parseISO(date) : null;
-  }
-
-  parseResource(val: string | BaseRawResource): BaseResource {
-    if (!val) {
-      return null;
-    }
-    if (typeof val === 'string') {
-      return {_shallow: true, '@id': val};
-    }
-    return {_shallow: false, ...val};
-  }
-
-  parseResources(val: string[] | BaseRawResource[]): BaseResource[] {
-    const res: BaseResource[] = [];
-    for (const o of val) {
-      res.push(this.parseResource(o));
-    }
-    return res;
-  }
-
-  abstract deserialize(data: U): T;
-
 }

@@ -13,6 +13,9 @@ export default class AngularV2Generator extends BaseGenerator {
       "base-resource.service.ts.hbs",
       "foo.service.ts.hbs",
       "deserialize.ts.hbs",
+      "serializer.ts.hbs",
+      "serializer.metadata.ts.hbs",
+      "serializer.service.ts.hbs",
       "utils.ts.hbs"
     ]);
   }
@@ -108,6 +111,27 @@ export default class AngularV2Generator extends BaseGenerator {
       context,
       false
     );
+
+    dest = `${dir}/serializer`;
+    this.createDir(dest, false);
+    this.createFile(
+      "serializer.ts.hbs",
+      `${dest}/serializer.ts`,
+      context,
+      false
+    );
+    this.createFile(
+      "serializer.service.ts.hbs",
+      `${dest}/serializer.service.ts`,
+      context,
+      false
+    );
+    this.createFile(
+      "serializer.metadata.ts.hbs",
+      `${dest}/serializer.metadata.ts`,
+      context,
+      false
+    );
   }
 
   generate(api, resource, dir) {
@@ -156,6 +180,28 @@ export default class AngularV2Generator extends BaseGenerator {
     return "any";
   }
 
+  getSerializerType(field) {
+    if (field.reference) {
+      return field.reference.title;
+    }
+    switch (field.range) {
+      case "http://www.w3.org/2001/XMLSchema#integer":
+      case "http://www.w3.org/2001/XMLSchema#decimal":
+        return "number";
+      case "http://www.w3.org/2001/XMLSchema#boolean":
+        return "boolean";
+      case "http://www.w3.org/2001/XMLSchema#date":
+      case "http://www.w3.org/2001/XMLSchema#dateTime":
+        return "date";
+      case "http://www.w3.org/2001/XMLSchema#time":
+        return "time";
+      case "http://www.w3.org/2001/XMLSchema#string":
+        return "string";
+    }
+
+    return "any";
+  }
+
   getDescription(field) {
     return field.description ? field.description.replace(/"/g, "'") : "";
   }
@@ -173,6 +219,7 @@ export default class AngularV2Generator extends BaseGenerator {
         notrequired: !field.required,
         name: field.name,
         type: this.getReferenceFieldType(field, mode),
+        serializerType: this.getSerializerType(field),
         description: this.getDescription(field),
         readonly: false,
         reference: field.reference,
@@ -189,6 +236,7 @@ export default class AngularV2Generator extends BaseGenerator {
         notrequired: !field.required,
         name: field.name,
         type: this.getReferenceFieldType(field, mode),
+        serializerType: this.getSerializerType(field),
         description: this.getDescription(field),
         readonly: true,
         reference: field.reference,
@@ -213,13 +261,17 @@ export default class AngularV2Generator extends BaseGenerator {
     // Patch properties for templates
     for (const field of fieldsArray) {
       field.isDate = field.type === "Date";
-      field.isMultiple = field.maxCardinality !== 1;
+      field.isMultiple = field.reference && field.maxCardinality !== 1;
     }
 
     const imports = {};
 
     for (const field of fieldsArray) {
       if (field.reference) {
+        // Ignore self references
+        if (field.reference.title === resource.title) {
+          continue;
+        }
         imports[field.reference.title] = {
           type:
             mode === "raw"

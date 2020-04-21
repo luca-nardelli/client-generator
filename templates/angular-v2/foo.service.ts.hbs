@@ -4,21 +4,19 @@ import {Inject, Injectable} from '@angular/core';
 import {BaseResourceService} from '../utils/base-resource.service';
 import {HttpClient} from '@angular/common/http';
 import {deserializeRaw{{title~}} } from '../utils/deserialize';
+import {SerializerService} from '../serializer/serializer.service';
 
 @Injectable()
 export class {{title}}Service extends BaseResourceService<{{title}}, Raw{{title}}> {
 
   static readonly RESOURCE_NAME = '{{name}}';
+  static readonly RESOURCE_TYPE = '{{title}}';
 
   constructor(
     protected http: HttpClient,
-    @Inject('BASE_API_URL') protected baseUrl: string
+    @Inject('BASE_API_URL') protected baseUrl: string,
+    protected serializer: SerializerService,
   ) {
-    super(http, baseUrl, {{title}}Service.RESOURCE_NAME);
+    super(http, baseUrl, serializer, {{title}}Service.RESOURCE_NAME,{{title}}Service.RESOURCE_TYPE);
   }
-
-  deserialize(data: Raw{{title}}): {{title}} {
-    return deserializeRaw{{title}}(data);
-  }
-
 }
