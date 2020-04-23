@@ -71,6 +71,30 @@ export abstract class BaseResourceService<T extends BaseResource, U extends Base
     return this.http.delete<{}>(`${this.baseUrl}${this.buildIri(id)}`, options);
   }
 
+  saveItemRaw<K = U>(item: U, options?: HttpClientOptions) {
+    if(!item['@id']){
+      return this.addItemRaw<K>(item,options);
+    } else {
+      return this.updateItemRaw<K>(item,options);
+    }
+  }
+
+  saveRawItem(item: U, options?: HttpClientOptions) {
+    if(!item['@id']){
+      return this.addRawItem(item,options);
+    } else {
+      return this.updateRawItem(item,options);
+    }
+  }
+
+  saveItem(item: T, normalizeOpts?: NormalizeOpts, options?: HttpClientOptions) {
+    if(!item['@id']){
+      return this.addItem(item, normalizeOpts, options);
+    } else {
+      return this.updateItem(item, normalizeOpts, options);
+    }
+  }
+
   buildIri(id?: ApiPlatformIdentifier): string {
     if (id && id.id) {
       return `/api/${this.RESOURCE_NAME}/${id.id}`;
