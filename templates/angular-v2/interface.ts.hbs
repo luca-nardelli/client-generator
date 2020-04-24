@@ -5,6 +5,6 @@ import {BaseResource} from '../utils/utils';
 
 export interface {{{title}}} extends BaseResource {
 {{#each fields}}
-  {{{name}}}{{#if notrequired}}?{{/if}}: {{{type}}};
+  {{{name}}}?: {{{type}}};
 {{/each}}
 }

@@ -12,7 +12,6 @@ export default class AngularV2Generator extends BaseGenerator {
       "interface.ts.hbs",
       "base-resource.service.ts.hbs",
       "foo.service.ts.hbs",
-      "deserialize.ts.hbs",
       "serializer.ts.hbs",
       "serializer.metadata.ts.hbs",
       "serializer.service.ts.hbs",
@@ -105,12 +104,6 @@ export default class AngularV2Generator extends BaseGenerator {
       res.fields = fields;
       context.resources.push(res);
     }
-    this.createFile(
-      "deserialize.ts.hbs",
-      `${dir}/utils/deserialize.ts`,
-      context,
-      false
-    );
 
     dest = `${dir}/serializer`;
     this.createDir(dest, false);

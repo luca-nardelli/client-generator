@@ -7,6 +7,6 @@ import { {{type}} } from '{{file}}';
 export interface {{{title}}} {
   '@id'?: string;
 {{#each fields}}
-  {{{name}}}{{#if notrequired}}?{{/if}}: {{{type}}};
+  {{{name}}}?: {{{type}}};
 {{/each}}
 }
