@@ -244,6 +244,7 @@ export default class AngularV2Generator extends BaseGenerator {
         name: "id",
         type: "string",
         description: "id field",
+        serializerType: "string",
         readonly: false
       };
     }
