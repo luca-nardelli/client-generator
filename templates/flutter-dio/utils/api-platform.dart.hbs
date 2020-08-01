@@ -27,6 +27,15 @@ class FieldMetadata {
 
 
 nullSerializer<T>(Map<String,dynamic> data, String propName, dynamic propValue, bool isDirty, [Map<Type,Map<String,SerializationOptions>> rootOptions = null]){
+
+  // Handle null value
+  if(propValue == null){
+    if(isDirty){
+      data[propName] = null;
+    }
+    return;
+  }
+
   // Handle Lists
   if (propValue is List){
     data[propName] = List();
@@ -37,30 +46,19 @@ nullSerializer<T>(Map<String,dynamic> data, String propName, dynamic propValue, 
         data[propName].add(elem);
       }
     }
-  }
-
-  // Handle null value
-  if(propValue == null){
-    if(isDirty){
-      data[propName] = null;
-    }
     return;
   }
 
   // Handle rest
-  final options = rootOptions == null ? null : rootOptions[T][propName] ?? null;
-  if( options != null ){
-    if(propValue is BaseModel && options.shallow){
+  final options = ((rootOptions ?? {})[T] ?? {})[propName] ?? SerializationOptions(shallow: false);
+  if(propValue is BaseModel){
+    if(options.shallow){
       data[propName] = propValue.toIri();
-      return;
-    }
-  }
-  else {
-    if (propValue is BaseModel){
-      data[propName] = propValue.toJson(rootOptions);
     } else {
-      data[propName] = propValue;
+      data[propName] = propValue.toJson(rootOptions);
     }
-    return;
+  } else {
+    data[propName] = propValue;
   }
+  return;
 }
