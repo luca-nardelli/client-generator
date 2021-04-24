@@ -1,0 +1,131 @@
+import {NORMALIZER_METADATA, PropMetadata, TypeMetadata} from './serializer.metadata';
+
+export interface NormalizeOpts {
+  types?: {
+    [x: string]: TypeNormalizeOpts
+  }
+}
+
+interface TypeNormalizeOpts {
+  properties: {
+    [x: string]: {
+      shallow: boolean
+    }
+  };
+}
+
+interface InnerNormalizeOpts {
+  shallow?: boolean | null
+}
+
+
+export class Normalizer {
+  constructor() {
+  }
+
+  denormalize(data: any, type: string) {
+    const typeMetadata = NORMALIZER_METADATA[type] as TypeMetadata;
+    if (!typeMetadata) {
+      console.error(`Error in denormalizing ${type}: No information available`);
+      return null;
+    }
+    if (typeMetadata.denormalizeFn) {
+      return typeMetadata.denormalizeFn(data);
+    } else if (typeMetadata.properties) {
+      // Handle IRIs
+      if (typeof data === 'string') {
+        return {_shallow: true, '@id': data};
+      }
+
+      const result: any = {
+        _shallow: false,
+        '@id': data['@id']
+      };
+      for (const prop in typeMetadata.properties) {
+        if (!typeMetadata.properties.hasOwnProperty(prop)) {
+          continue;
+        }
+        const propMetadata = typeMetadata.properties[prop] as PropMetadata;
+        const propData = data[prop];
+
+        // If not serialized, ignore
+        if (propData === undefined) {
+          continue;
+        }
+        else if (propData === null) {
+          result[prop] = null;
+          continue;
+        }
+
+        if (!propMetadata.isArray) {
+          result[prop] = this.denormalize(propData, propMetadata.type);
+        } else {
+          result[prop] = (propData as any[]).map(value => this.denormalize(value, propMetadata.type));
+        }
+      }
+      return result;
+    }
+  }
+
+  normalize<K = any>(data: any, type: string, opts: NormalizeOpts = {}, innerOpts: InnerNormalizeOpts = {}): K {
+    const typeMetadata = NORMALIZER_METADATA[type] as TypeMetadata;
+    if (!typeMetadata) {
+      console.error(`Error in normalizing ${type}: No information available`);
+      return null;
+    }
+    // console.log('Normalizing', {data,type,opts,innerOpts});
+    if(data === null || data === undefined){
+      return data;
+    }
+    if (typeMetadata.normalizeFn) {
+      return typeMetadata.normalizeFn(data);
+    } else if (typeMetadata.properties) {
+
+      if (typeof data === 'object') {
+        if (innerOpts.shallow === true || data._shallow) {
+          return data['@id'];
+        }
+      }
+
+      const result: any = {
+        ...data['@id'] && {'@id': data['@id']}
+      };
+      for (const prop in typeMetadata.properties) {
+        if (!typeMetadata.properties.hasOwnProperty(prop)) {
+          continue;
+        }
+        const propMetadata = typeMetadata.properties[prop] as PropMetadata;
+        const propData = data[prop];
+
+        if (propData === undefined) {
+          // Ignore this property
+          continue;
+        } else if (propData === null){
+          result[prop] = null;
+          continue;
+        }
+
+        let typeNormalizeOpts = {} as TypeNormalizeOpts;
+        if(opts.types && opts.types[type]){
+          typeNormalizeOpts = opts.types[type];
+        }
+        const nextInnerOpts: InnerNormalizeOpts = {
+          shallow: typeNormalizeOpts && typeNormalizeOpts.properties && typeNormalizeOpts.properties[prop]
+            ? typeNormalizeOpts.properties[prop].shallow : undefined,
+        };
+
+        if (!propMetadata.isArray) {
+          const res = this.normalize(propData, propMetadata.type, opts, nextInnerOpts);
+          if(res === undefined){
+            continue;
+          }
+          result[prop] = res;
+        } else {
+          result[prop] = (propData as any[]).map(value => this.normalize(value, propMetadata.type, opts, nextInnerOpts));
+        }
+      }
+      return result;
+    }
+  }
+
+}

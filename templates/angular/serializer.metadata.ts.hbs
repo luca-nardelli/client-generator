@@ -1,0 +1,88 @@
+import {parseISO, parse, format} from 'date-fns';
+
+export interface TypeMetadata {
+  normalizeFn: (data: any) => any;
+  denormalizeFn: (data: any) => any;
+  properties: {
+    [x: string]: PropMetadata;
+  };
+}
+
+export interface PropMetadata {
+  type: 'string' | 'datetime' | 'number' | string;
+  isArray: boolean;
+}
+
+export const BASE_NORMALIZER_METADATA: any = {
+  string: {
+    normalizeFn: (o: string) => o,
+    denormalizeFn: (o: string) => o,
+  },
+  number: {
+    normalizeFn: (o: number) => o,
+    denormalizeFn: (o: number) => o,
+  },
+  boolean: {
+    normalizeFn: (o: boolean) => o,
+    denormalizeFn: (o: boolean) => o,
+  },
+  any: {
+    normalizeFn: (o: any) => o,
+    denormalizeFn: (o: any) => o,
+  },
+  date: {
+    normalizeFn: (o: Date) => o ? o.toISOString() : null,
+    denormalizeFn: parseDateTime,
+  },
+  time: {
+    normalizeFn: (o: Date) => o ? format(o,'HH:mm:ss') : null,
+    denormalizeFn: parseTime,
+  },
+}
+
+function parseTime(o: string): Date {
+  if(!o){
+    return null;
+  }
+  // Detect how many tokens we have
+  const tokens = o.split(':');
+  let parsed = new Date(NaN);
+  if(tokens.length === 1){
+    parsed = parse(o,'HH', 0);
+  } else if(tokens.length === 2){
+    parsed = parse(o,'HH:mm', 0);
+  } else if(tokens.length === 3){
+    parsed = parse(o,'HH:mm:ss', 0);
+  }
+  if(isNaN(parsed.getTime())){
+    console.error('Error parsing time instance: ',{originalValue: o});
+  }
+  return parsed;
+}
+
+function parseDateTime(o: string): Date {
+  if(!o){
+    return null;
+  }
+  const parsed = parseISO(o);
+  if(isNaN(parsed.getTime())){
+    console.error('Error parsing time instance: ',{originalValue: o});
+  }
+  return parsed;
+}
+
+export const NORMALIZER_METADATA: any = {
+  ...BASE_NORMALIZER_METADATA,
+{{#each resources}}
+  {{title}}: {
+    properties: {
+      {{#each fields}}
+      {{name}}: {
+        isArray: {{#if isMultiple}}true{{else}}false{{/if}},
+        type: '{{serializerType}}',
+      },
+      {{/each}}
+    }
+  },
+{{/each}}
+};

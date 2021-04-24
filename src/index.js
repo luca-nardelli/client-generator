@@ -128,6 +128,8 @@ parser(entrypointWithSlash)
       })
       // display helps after all resources have been generated to check relation dependency for example
       .forEach((resource) => generator.help(resource, outputDirectory));
+    // Invoke the finalize function for the generator
+    generator.finalize(outputDirectory);
   })
   .catch((e) => {
     console.log(e);

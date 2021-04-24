@@ -1,0 +1,52 @@
+import {HttpHeaders, HttpParams} from '@angular/common/http';
+
+export interface ApiPlatformPagedCollection<T> {
+  '{{hydraPrefix}}totalItems'?: number;
+  '{{hydraPrefix}}member'?: T[];
+  '@context'?: string;
+  '@id'?: string;
+  '@type'?: string;
+  '{{hydraPrefix}}view'?: {
+    '@id'?: string;
+    '@type'?: string;
+    '{{hydraPrefix}}first'?: string;
+    '{{hydraPrefix}}last'?: string;
+    '{{hydraPrefix}}previous'?: string;
+    '{{hydraPrefix}}next'?: string;
+  };
+}
+
+export interface ApiPlatformCollection<T> {
+  '{{hydraPrefix}}totalItems'?: number;
+  '{{hydraPrefix}}member'?: T[];
+  '@context'?: string;
+  '@id'?: string;
+  '@type'?: string;
+}
+
+export interface ApiPlatformIdentifier {
+  '@id'?: string;
+  id?: string;
+}
+
+export interface HttpClientOptions {
+  headers?: HttpHeaders | {
+    [header: string]: string | string[];
+  };
+  observe?: 'body';
+  params?: HttpParams | {
+    [param: string]: string | string[];
+  };
+  reportProgress?: boolean;
+  responseType?: 'json';
+  withCredentials?: boolean;
+}
+
+export interface BaseResource {
+  readonly _shallow?: boolean;
+  '@id'?: string;
+}
+
+export interface BaseRawResource {
+  '@id'?: string;
+}

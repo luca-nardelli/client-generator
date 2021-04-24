@@ -1,0 +1,10 @@
+{{#each imports}}
+import { {{type}} } from '{{file}}';
+{{/each}}
+import {BaseResource} from '../utils/utils';
+
+export interface {{{title}}} extends BaseResource {
+{{#each fields}}
+  {{{name}}}?: {{{type}}};
+{{/each}}
+}

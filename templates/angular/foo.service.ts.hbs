@@ -1,0 +1,21 @@
+import { {{~title~}} } from '../interfaces/{{resourceFile}}';
+import {Raw{{~title~}} } from '../raw-interfaces/{{resourceFile}}';
+import {Inject, Injectable} from '@angular/core';
+import {BaseResourceService} from '../utils/base-resource.service';
+import {HttpClient} from '@angular/common/http';
+import {SerializerService} from '../serializer/serializer.service';
+
+@Injectable()
+export class {{title}}Service extends BaseResourceService<{{title}}, Raw{{title}}> {
+
+  static readonly RESOURCE_NAME = '{{name}}';
+  static readonly RESOURCE_TYPE = '{{title}}';
+
+  constructor(
+    protected http: HttpClient,
+    @Inject('BASE_API_URL') protected baseUrl: string,
+    protected serializer: SerializerService,
+  ) {
+    super(http, baseUrl, serializer, {{title}}Service.RESOURCE_NAME,{{title}}Service.RESOURCE_TYPE);
+  }
+}

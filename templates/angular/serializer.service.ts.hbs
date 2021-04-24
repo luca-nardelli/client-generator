@@ -1,0 +1,22 @@
+import {Injectable} from '@angular/core';
+import {NORMALIZER_METADATA, PropMetadata, TypeMetadata} from './serializer.metadata';
+import {Normalizer, NormalizeOpts} from './serializer';
+
+@Injectable()
+export class SerializerService {
+
+  private normalizer: Normalizer;
+
+  constructor() {
+    this.normalizer = new Normalizer();
+  }
+
+  denormalize(data: any, type: string) {
+    return this.normalizer.denormalize(data,type);
+  }
+
+  normalize(data: any, type: string, opts: NormalizeOpts = {}) {
+    return this.normalizer.normalize(data,type,opts)
+  }
+
+}
